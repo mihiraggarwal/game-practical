@@ -3,9 +3,9 @@
 	import welcome from '$lib/images/svelte-welcome.webp';
 	import welcome_fallback from '$lib/images/svelte-welcome.png';
 
-	import { env } from '$env/dynamic/public';
+	import { PUBLIC_SERVER_URL } from '$env/static/public';
 
-	const SERVER_URL = env.PUBLIC_SERVER_URL || 'http://localhost:5000'
+	const SERVER_URL = PUBLIC_SERVER_URL
 
 	let data = "couldn't fetch"
 	fetch(SERVER_URL).then((resp) => {
