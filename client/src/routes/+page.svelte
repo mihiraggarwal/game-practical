@@ -15,6 +15,9 @@
     $: iActions
 
     let node_counter = 0
+    let next_branch_counter = 0
+
+    let ind_action_counter = 0
     
     const add_action = () => {
         if (node_counter == 0) node_counter++
@@ -25,6 +28,8 @@
         action_elem.className = "actions"
         
         actions_div?.appendChild(action_elem)
+        next_branch_counter++
+        ind_action_counter++
     }
     
     const add_move = () => {
@@ -32,6 +37,16 @@
         const old_action_btn = Array.from(document.getElementsByClassName("action_btn")).at(-1)
         old_action_btn?.setAttribute("disabled", "true")
         
+        const old_inputs = Array.from(document.getElementsByClassName("player_input")).at(-1)
+        old_inputs?.setAttribute("disabled", "true")
+        
+        const actions_input = Array.from(document.getElementsByClassName("actions"))
+        actions_input.slice(actions_input.length - ind_action_counter)
+        
+        actions_input.forEach(x => {
+            x.setAttribute("disabled", "true")
+        });
+
         // const iLen = iActions.length
         // iActions.push(...Array.from(document.getElementsByClassName("actions") , x => (x as HTMLInputElement).value).slice(iLen))
         
@@ -61,6 +76,14 @@
         const action_div = document.createElement("div")
         action_div.className = "action_div"
 
+        for (let i = 0; i < next_branch_counter; i++) {
+            const action_elem = document.createElement("input")
+            action_elem.setAttribute("type", "text")
+            action_elem.className = "actions"
+            
+            action_div?.appendChild(action_elem)
+        }
+
         ind_div.appendChild(action_div)
     }
 
@@ -74,7 +97,7 @@
 <div class="tree">
     <div class="initial">
         Initial node
-        <input type="number" name="player_input" id="initial_player" bind:value={initial_player} required placeholder="Player" />
+        <input type="number" name="player_input" class="player_input" bind:value={initial_player} required placeholder="Player" />
         <button type="button" class="action_btn" on:click={add_action}>Add action</button>
         <div class="action_div"></div>
     </div>
