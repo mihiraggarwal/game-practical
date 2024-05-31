@@ -49,11 +49,11 @@ def subnash(node: "Node"):
     
     return action, max_payoff, node.player, node.node_number, sub_node
 
-def spne(arr: list, node: "Node", k: int):
+def spne(arr: list, node: "Node"):
     children = node.children
     for i in range(len(children)):
         if children[i].payoffs == None:
-            ret, k = spne(arr, children[i], k) # recursively make all pre-terminal nodes
+            ret = spne(arr, children[i]) # recursively make all pre-terminal nodes
             children[i] = ret
     action, payoff, player, num, n = subnash(node)
     arr.append({
@@ -62,8 +62,7 @@ def spne(arr: list, node: "Node", k: int):
         "player": player,
         "num": num
     })
-    k += 1
-    return n, k # find the nash of a pre-terminal node
+    return n # find the nash of a pre-terminal node
 
 def main():
     arr = [] # dynamic programming 👍
@@ -133,7 +132,7 @@ def main():
     # n4 = Node(node_number=4, payoffs=(0,0))
     # n2.children.append(n4)
 
-    n, k = spne(arr, n0, 0)
+    n = spne(arr, n0)
 
     s0, s1 = [], []
     print(f"SPNE payoff: {arr[-1]["payoff"]}")
