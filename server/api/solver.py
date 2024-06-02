@@ -9,9 +9,10 @@
 - start off with 2 player perfect information finite info sets single PSNE payoff
 - bring in PSNE strategy profile (full - along with unreachable strategies)
 - bring in multiple PSNE - make arr an array of arrays where each array is one SPNE
-- take out pure Nash too
-- bring in multiple players
 - bring in imperfect information
+- bring in pure Nash
+- bring in multiple players
+- bring in MSNE
 - bring in nature
 - bring in infinite info sets i.e continuous games
 - bring in PBE
@@ -51,21 +52,23 @@ def subnash(node: "Node"):
 
 def spne(arr: list, node: "Node"):
     children = node.children
+    main_arr = []
     for i in range(len(children)):
         if children[i].payoffs == None:
-            ret = spne(arr, children[i]) # recursively make all pre-terminal nodes
+            ret, ret_arr = spne(arr, children[i]) # recursively make all pre-terminal nodes
             children[i] = ret
+            main_arr.extend(ret_arr)
     action, payoff, player, num, n = subnash(node)
-    arr.append({
+    main_arr.append({
         "action": action,
         "payoff": payoff,
         "player": player,
         "num": num
     })
-    return n # find the nash of a pre-terminal node
+    return n, main_arr # find the nash of a pre-terminal node
 
 def main():
-    arr = [] # dynamic programming 👍
+    # arr = [] # dynamic programming 👍
 
     # n0 = Node(node_number=0, player=0, children=[], actions=("S", "C"))
 
@@ -132,7 +135,7 @@ def main():
     # n4 = Node(node_number=4, payoffs=(0,0))
     # n2.children.append(n4)
 
-    n = spne(arr, n0)
+    n, arr = spne([], n0)
 
     s0, s1 = [], []
     print(f"SPNE payoff: {arr[-1]["payoff"]}")
