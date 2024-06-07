@@ -8,6 +8,8 @@
     - in the end, get payoffs
     */
 
+    import PlusBtn from "../lib/components/PlusBtn.svelte";
+
     let nPlayers: number;
     let initial_player: number;
 
@@ -90,17 +92,20 @@
 </script>
 
 <h1>game-practical</h1>
-<label for="players">Number of players</label>
-<input type="number" id="players" name="players" bind:value={nPlayers} required />
+<div class="pre-tree">
+    <label for="players">Number of players</label>
+    <input type="number" id="players" name="players" bind:value={nPlayers} required />
+</div>
 <br /><br />
 
 <div class="tree">
     <div class="initial">
-        Initial node
-        <input type="number" name="player_input" class="player_input" bind:value={initial_player} required placeholder="Player" />
+        <PlusBtn />
+        <!-- <input type="number" name="player_input" class="player_input" bind:value={initial_player} required placeholder="Player" /> -->
         <button type="button" class="action_btn" on:click={add_action}>Add action</button>
         <div class="action_div"></div>
     </div>
+
     <div class="further">
         {#if node_counter < 1}
             <button type="button" id="node_btn" on:click={add_move} disabled>Add move</button>
@@ -111,6 +116,12 @@
 </div>
 
 <style>
+    .pre-tree {
+        display: flex;
+        justify-content: center;
+        gap: 1vw
+    }
+
     .initial {
         display: flex;
         flex-direction: row;
@@ -121,5 +132,16 @@
         display: flex;
         flex-direction: row;
         gap: 10px
+    }
+
+    .tree {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    h1 {
+        font-family: "Inter";
+        text-align: center;
     }
 </style>
