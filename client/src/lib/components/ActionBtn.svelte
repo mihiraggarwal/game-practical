@@ -1,0 +1,75 @@
+<script lang="ts">
+    let action_counter = 0
+    
+    const add_action = () => {
+        const dialog = document.getElementById("action_modal")
+        dialog?.showModal();
+    }
+
+    const add_row = () => {
+        action_counter++;
+    }
+    
+    const enter = () => {
+        const dialog = document.getElementById("action_modal")
+        dialog?.close();
+    }
+</script>
+
+<button type="button" class="action_btn" on:click={add_action}>Add action</button>
+
+<dialog id="action_modal">
+    <div class="modal_div">
+        <div class="action_component">
+            {#each {length: action_counter + 1} as _, i}
+            <div class="indi_action">
+                <div id="action_ntm">{i+1}.</div>
+                <input type="text" class="action_input">
+            </div>
+            {/each}
+        </div>
+        <div class="action_buttons">
+            <button class="plus_btn" on:click={add_row}>
+                <i class="fa fa-plus plus"></i>
+            </button>
+            <button class="enter_btn" on:click={enter}>Finish</button>
+        </div>
+    </div>
+</dialog>
+
+<style>
+    .action_btn {
+        background-color: #fff;
+        border: 3px solid #000;
+        color: #000;
+        border-radius: 5px;
+        height: 100%
+    }
+
+    .action_btn:hover {
+        cursor: pointer;
+    }
+
+    .modal_div {
+        display: flex;
+        flex-direction: column;
+        gap: 1vh;
+    }
+
+    .action_component {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .indi_action {
+        display: flex;
+        flex-direction: row;
+        gap: 1vw;
+    }
+
+    .action_buttons {
+        display: flex;
+        justify-content: center;
+        gap: 0.5vw;
+    }
+</style>

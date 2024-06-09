@@ -1,4 +1,7 @@
 <script lang="ts">
+
+    export let choice;
+
     const btnClick = () => {
         const dialog = document.getElementById("dlg")
         dialog?.showModal()
@@ -36,11 +39,13 @@
     }
 
     const playerEnter = () => {
+        choice = 0;
         const playerNum = (document.getElementById("player_input") as HTMLInputElement).value
         enter(playerNum)
     }
         
     const payoffEnter = () => {
+        choice = 1;
         const payoffval = (document.getElementById("payoff_input") as HTMLInputElement).value
         enter(payoffval)
     }
