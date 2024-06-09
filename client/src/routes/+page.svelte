@@ -8,6 +8,7 @@
     - in the end, get payoffs
     */
 
+    import Subtree from "$lib/components/Subtree.svelte";
     import PlusBtn from "../lib/components/PlusBtn.svelte";
 
     let nPlayers: number;
@@ -20,19 +21,6 @@
     let next_branch_counter = 0
 
     let ind_action_counter = 0
-    
-    const add_action = () => {
-        if (node_counter == 0) node_counter++
-        const actions_div = document.getElementsByClassName("action_div")[node_counter-1]
-
-        const action_elem = document.createElement("input")
-        action_elem.setAttribute("type", "text")
-        action_elem.className = "actions"
-        
-        actions_div?.appendChild(action_elem)
-        next_branch_counter++
-        ind_action_counter++
-    }
     
     const add_move = () => {
         node_counter++
@@ -95,16 +83,12 @@
 <div class="pre-tree">
     <label for="players">Number of players</label>
     <input type="number" id="players" name="players" bind:value={nPlayers} required />
-    <button type="button" class="action_btn" on:click={add_action}>Add action</button>
 </div>
 <br /><br />
 
 <div class="tree">
-    <div class="initial">
-        <PlusBtn />
-        <!-- <input type="number" name="player_input" class="player_input" bind:value={initial_player} required placeholder="Player" /> -->
-        <div class="action_div"></div>
-    </div>
+
+    <Subtree />
 
     <!-- <div class="further">
         {#if node_counter < 1}
@@ -116,32 +100,20 @@
 </div>
 
 <style>
+    h1 {
+        font-family: "Inter";
+        text-align: center;
+    }
+
     .pre-tree {
         display: flex;
         justify-content: center;
         gap: 1vw
     }
 
-    .initial {
-        display: flex;
-        flex-direction: row;
-        gap: 10px
-    }
-    
-    .action_div {
-        display: flex;
-        flex-direction: row;
-        gap: 10px
-    }
-
     .tree {
         display: flex;
         align-items: center;
         flex-direction: column;
-    }
-
-    h1 {
-        font-family: "Inter";
-        text-align: center;
     }
 </style>
