@@ -95,6 +95,7 @@
 <div class="pre-tree">
     <label for="players">Number of players</label>
     <input type="number" id="players" name="players" bind:value={nPlayers} required />
+    <button type="button" class="action_btn" on:click={add_action}>Add action</button>
 </div>
 <br /><br />
 
@@ -102,17 +103,16 @@
     <div class="initial">
         <PlusBtn />
         <!-- <input type="number" name="player_input" class="player_input" bind:value={initial_player} required placeholder="Player" /> -->
-        <button type="button" class="action_btn" on:click={add_action}>Add action</button>
         <div class="action_div"></div>
     </div>
 
-    <div class="further">
+    <!-- <div class="further">
         {#if node_counter < 1}
             <button type="button" id="node_btn" on:click={add_move} disabled>Add move</button>
         {:else}
             <button type="button" id="node_btn" on:click={add_move}>Add move</button>
         {/if}
-    </div>
+    </div> -->
 </div>
 
 <style>
