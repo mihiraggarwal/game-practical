@@ -2,74 +2,79 @@
 
     export let choice;
 
+    export let playerNum;
+    export let payoffval;
+
+    export let node_num
+    
+    let dialog: HTMLDialogElement;
+
     const btnClick = () => {
-        const dialog = document.getElementById("dlg")
-        dialog?.showModal()
+        dialog = document.getElementById(`dlg-${node_num}`) as HTMLDialogElement;
+        dialog!.showModal()
     }
 
     const moveBtn = () => {
-        const player_input = document.getElementById("player_num")
-        const payoff_input = document.getElementById("payoff")
+        const player_input = document.getElementById(`player_num_${node_num}`) as HTMLInputElement
+        const payoff_input = document.getElementById(`payoff_${node_num}`) as HTMLInputElement
         payoff_input!.style.display = "none"
         player_input!.style.display = "block"
-    }
-    
+        }
+        
     const payoffBtn = () => {
-        const payoff_input = document.getElementById("payoff")
-        const player_input = document.getElementById("player_num")
+        const payoff_input = document.getElementById(`payoff_${node_num}`) as HTMLInputElement
+        const player_input = document.getElementById(`player_num_${node_num}`) as HTMLInputElement
         player_input!.style.display = "none"
         payoff_input!.style.display = "block"
     }
 
     const enter = (val: string) => {
-        const plus_btn = document.getElementsByClassName("plus-btn")[0]
-        const plus_icos = document.getElementsByClassName("plus") as HTMLCollectionOf<HTMLElement>
-        Array.from(plus_icos).forEach(plus_ico => {
-            plus_ico.style.display = "none"
-        });
-        
+        const plus_btn = document.getElementById(`plus-btn-node-${node_num}`)
+        const plus_ico = document.getElementById(`plus-node-${node_num}`)
+        plus_ico!.style.display = "none"
+
         const new_val = document.createElement("div")
         new_val.className = "plus"
         new_val.innerHTML = val
 
-        plus_btn.appendChild(new_val)
+        plus_btn!.appendChild(new_val)
         
-        const dialog = document.getElementById("dlg")
-        dialog?.close()
+        dialog!.close()
     }
 
     const playerEnter = () => {
         choice = 0;
-        const playerNum = (document.getElementById("player_input") as HTMLInputElement).value
+        playerNum = (document.getElementById(`player_input_${node_num}`) as HTMLInputElement).value
         enter(playerNum)
-    }
+        }
         
     const payoffEnter = () => {
         choice = 1;
-        const payoffval = (document.getElementById("payoff_input") as HTMLInputElement).value
+        payoffval = (document.getElementById(`payoff_input_${node_num}`) as HTMLInputElement).value
         enter(payoffval)
     }
 </script>
 
 <div class="main">
-    <button class="plus-btn" on:click={btnClick}>
-        <i class="fa fa-plus plus"></i>
+    <button class="plus-btn" id="plus-btn-node-{node_num}" on:click={btnClick}>
+        <i class="fa fa-plus plus" id="plus-node-{node_num}"></i>
     </button>
 </div>
 
-<dialog id="dlg">
+<!-- everything had to be converted to class cuz of recursion -->
+<dialog class="dlg" id="dlg-{node_num}">
     <button class="optionBtn" on:click={moveBtn}>Move</button>
     <button class="optionBtn" on:click={payoffBtn}>Payoff</button>
 
-    <div id="player_num">
+    <div class="player_num" id="player_num_{node_num}">
         <div>Player: </div>
-        <input type="number" name="player_num" id="player_input" />
+        <input type="number" name="player_num" class="player_input" id="player_input_{node_num}" />
         <button class="optionBtn" on:click={playerEnter}>Enter</button>
     </div>
 
-    <div id="payoff">
+    <div class="payoff" id="payoff_{node_num}">
         <div>Payoff: </div>
-        <input type="text" name="payoff" id="payoff_input" />
+        <input type="text" name="payoff" class="payoff_input" id="payoff_input_{node_num}" />
         <button class="optionBtn" on:click={payoffEnter}>Enter</button>
     </div>
 </dialog>
@@ -94,11 +99,11 @@
         font-size: 2em;
     }
 
-    #player_num {
+    .player_num {
         display: none
     }
 
-    #payoff {
+    .payoff {
         display: none
     }
 </style>

@@ -1,9 +1,13 @@
 <script lang="ts">
-    let action_counter = 0
+    export let action_counter: number
+    export let children: Array<string>
+    export let node_num: number
+
+    let dialog: HTMLDialogElement;
     
     const add_action = () => {
-        const dialog = document.getElementById("action_modal")
-        dialog?.showModal();
+        dialog = document.getElementById(`action_modal-${node_num}`) as HTMLDialogElement;
+        dialog.showModal();
     }
 
     const add_row = () => {
@@ -11,20 +15,20 @@
     }
     
     const enter = () => {
-        const dialog = document.getElementById("action_modal")
-        dialog?.close();
+        children = Array.from(document.getElementsByClassName(`action_input ${node_num}`), x => (x as HTMLInputElement).value)
+        dialog.close();
     }
 </script>
 
 <button type="button" class="action_btn" on:click={add_action}>Add action</button>
 
-<dialog id="action_modal">
+<dialog class="action_modal" id="action_modal-{node_num}">
     <div class="modal_div">
         <div class="action_component">
             {#each {length: action_counter + 1} as _, i}
             <div class="indi_action">
-                <div id="action_ntm">{i+1}.</div>
-                <input type="text" class="action_input">
+                <div class="action_ntm">{i+1}.</div>
+                <input type="text" class="action_input {node_num}">
             </div>
             {/each}
         </div>
