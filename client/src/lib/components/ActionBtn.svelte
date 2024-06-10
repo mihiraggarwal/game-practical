@@ -47,7 +47,8 @@
         border: 3px solid #000;
         color: #000;
         border-radius: 5px;
-        height: 100%
+        height: 100%;
+        width: 6vw;
     }
 
     .action_btn:hover {

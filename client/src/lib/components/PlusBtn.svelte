@@ -19,7 +19,7 @@
         const payoff_input = document.getElementById(`payoff_${node_num}`) as HTMLInputElement
         payoff_input!.style.display = "none"
         player_input!.style.display = "block"
-        }
+    }
         
     const payoffBtn = () => {
         const payoff_input = document.getElementById(`payoff_${node_num}`) as HTMLInputElement
@@ -30,11 +30,13 @@
 
     const enter = (val: string) => {
         const plus_btn = document.getElementById(`plus-btn-node-${node_num}`)
-        const plus_ico = document.getElementById(`plus-node-${node_num}`)
-        plus_ico!.style.display = "none"
+        const plus_icos = document.getElementsByClassName(`plus ${node_num}`) as HTMLCollectionOf<HTMLElement>
+        Array.from(plus_icos).forEach(plus_ico => {
+            plus_ico.style.display = "none"
+        });
 
         const new_val = document.createElement("div")
-        new_val.className = "plus"
+        new_val.className = `plus ${node_num}`
         new_val.innerHTML = val
 
         plus_btn!.appendChild(new_val)
@@ -44,12 +46,16 @@
 
     const playerEnter = () => {
         choice = 0;
+        const btn = document.getElementById(`plus-btn-node-${node_num}`)
+        btn!.style.borderRadius = "50%"
         playerNum = (document.getElementById(`player_input_${node_num}`) as HTMLInputElement).value
         enter(playerNum)
-        }
+    }
         
     const payoffEnter = () => {
         choice = 1;
+        const btn = document.getElementById(`plus-btn-node-${node_num}`)
+        btn!.style.borderRadius = "0"
         payoffval = (document.getElementById(`payoff_input_${node_num}`) as HTMLInputElement).value
         enter(payoffval)
     }
@@ -57,11 +63,10 @@
 
 <div class="main">
     <button class="plus-btn" id="plus-btn-node-{node_num}" on:click={btnClick}>
-        <i class="fa fa-plus plus" id="plus-node-{node_num}"></i>
+        <i class="fa fa-plus plus {node_num}" id="plus-node-{node_num}"></i>
     </button>
 </div>
 
-<!-- everything had to be converted to class cuz of recursion -->
 <dialog class="dlg" id="dlg-{node_num}">
     <button class="optionBtn" on:click={moveBtn}>Move</button>
     <button class="optionBtn" on:click={payoffBtn}>Payoff</button>
