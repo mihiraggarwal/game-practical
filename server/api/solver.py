@@ -23,10 +23,10 @@ class Node:
             self, 
             node_number: int, 
             player: int = None,
-            children: list[list["Node"]] = None, # interpret as all possible children
-            actions: tuple[str] = None,
+            children: list[list["Node"]] = [], # interpret as all possible children
+            actions: tuple[str] = [],
             action: list[str] = None,
-            payoffs: tuple[int] = None
+            payoffs: list[int] = []
         ):
         
         self.node_number = node_number
@@ -90,7 +90,7 @@ def spne(arr: list, node: "Node"):
     children = node.children
     main_arr = []
     for i in range(len(children)):
-        if children[i][0].payoffs == None:
+        if children[i][0].payoffs == []:
             ret, ret_arr = spne(arr, children[i][0]) # recursively make all pre-terminal nodes
             children[i] = ret # automatically propagates to node.children
         else:
@@ -123,8 +123,25 @@ def spne(arr: list, node: "Node"):
 
     return sub_nodes, final_arr
 
-def main():
-    # arr = [] # dynamic programming 👍
+def main(n0):
+    n, arr = spne([], n0)
+    s = ""
+
+    for k in range(len(arr)):
+        s0, s1 = [], []
+        s += f"SPNE payoff: {arr[k][-1]["payoff"]}\n"
+        for i in range(len(arr[k])-1, -1, -1):
+            if "action" in arr[k][i].keys():
+                if arr[k][i]["player"] == 0:
+                    s0.append({f"n{arr[k][i]["num"]}": arr[k][i]["action"]})
+                else:
+                    s1.append({f"n{arr[k][i]["num"]}": arr[k][i]["action"]})
+        s += f"SPNE strategy profile: ({s0}, {s1})\n"
+    
+    return s
+
+
+################################# trial runs #################################
 
     # n0 = Node(node_number=0, player=0, children=[], actions=("S", "C"))
 
@@ -147,34 +164,34 @@ def main():
     # n2.children.append([n6])
 
 
-    n0 = Node(node_number=0, player=0, children=[], actions=(0, 1, 2))
+    # n0 = Node(node_number=0, player=0, children=[], actions=(0, 1, 2))
 
-    n1 = Node(node_number=1, player=1, children=[], actions=("A", "R"))
-    n0.children.append([n1])
+    # n1 = Node(node_number=1, player=1, children=[], actions=("A", "R"))
+    # n0.children.append([n1])
 
-    n2 = Node(node_number=2, player=1, children=[], actions=("A", "R"))
-    n0.children.append([n2])
+    # n2 = Node(node_number=2, player=1, children=[], actions=("A", "R"))
+    # n0.children.append([n2])
 
-    n3 = Node(node_number=3, player=1, children=[], actions=("A", "R"))
-    n0.children.append([n3])
+    # n3 = Node(node_number=3, player=1, children=[], actions=("A", "R"))
+    # n0.children.append([n3])
 
-    n4 = Node(node_number=4, payoffs=(2,0))
-    n1.children.append([n4])
+    # n4 = Node(node_number=4, payoffs=(2,0))
+    # n1.children.append([n4])
 
-    n5 = Node(node_number=5, payoffs=(0,0))
-    n1.children.append([n5])
+    # n5 = Node(node_number=5, payoffs=(0,0))
+    # n1.children.append([n5])
 
-    n6 = Node(node_number=6, payoffs=(1,1))
-    n2.children.append([n6])
+    # n6 = Node(node_number=6, payoffs=(1,1))
+    # n2.children.append([n6])
 
-    n7 = Node(node_number=7, payoffs=(0,0))
-    n2.children.append([n7])
+    # n7 = Node(node_number=7, payoffs=(0,0))
+    # n2.children.append([n7])
 
-    n8 = Node(node_number=8, payoffs=(0,2))
-    n3.children.append([n8])
+    # n8 = Node(node_number=8, payoffs=(0,2))
+    # n3.children.append([n8])
 
-    n9 = Node(node_number=9, payoffs=(0,0))
-    n3.children.append([n9])
+    # n9 = Node(node_number=9, payoffs=(0,0))
+    # n3.children.append([n9])
 
 
     # n0 = Node(node_number=0, player=0, children=[], actions=('G', 'H'))
@@ -217,19 +234,3 @@ def main():
     
     # n4 = Node(node_number=4, payoffs=(0,0))
     # n2.children.append([n4])
-
-    n, arr = spne([], n0)
-
-    for k in range(len(arr)):
-        s0, s1 = [], []
-        print(f"SPNE payoff: {arr[k][-1]["payoff"]}")
-        for i in range(len(arr[k])-1, -1, -1):
-            if "action" in arr[k][i].keys():
-                if arr[k][i]["player"] == 0:
-                    s0.append({f"n{arr[k][i]["num"]}": arr[k][i]["action"]})
-                else:
-                    s1.append({f"n{arr[k][i]["num"]}": arr[k][i]["action"]})
-        print(f"SPNE strategy profile: ({s0}, {s1})")
-
-if __name__ == '__main__':
-    main()

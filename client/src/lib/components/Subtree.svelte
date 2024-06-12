@@ -37,7 +37,7 @@
     $: widt = (node_wid / doc_wid) * 100
 
     $: if (choice == 0) {
-        node.player = playerNum;
+        node.player = parseInt(playerNum);
     } else if (choice == 1) {
         node.payoffs = payoffval.split(",").map((x) => parseInt(x))
     }

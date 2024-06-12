@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_SERVER_URL } from "$env/static/public";
     /*
     SOP for tree
     - ask for number of players
@@ -12,7 +13,7 @@
     import { global_node_num } from "$lib/stores";
 
     let nPlayers: number;
-    let nNodes: number = 0;
+    let answer: string = "";
 
     class Node {
         public node_number: number
@@ -40,16 +41,15 @@
     global_node_num.update(n => n+1)
 
     const solve = () => {
-        const display_node = (n: Node) => {
-            if (n.payoffs.length > 0) console.log(n)
-            else {
-                console.log(n)
-                n.children.forEach((element: Node) => {
-                    display_node(element)
-                });
-            }
-        }
-        display_node(node)
+        fetch(`${PUBLIC_SERVER_URL}/solve`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(node)
+        }).then(resp => {
+            resp.text().then(data => {
+                answer = data
+            })
+        })
     }
 </script>
 
@@ -66,7 +66,10 @@
 
 </div>
 
-<button on:click={solve}>Solve</button>
+<div class="answer-container">
+    <button on:click={solve}>SPNE</button>
+    <div class="ans">{answer}</div>
+</div>
 
 <style>
     h1 {
@@ -86,19 +89,28 @@
         flex-direction: column;
     }
 
+    .answer-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2vh;
+    }
+
     button {
         background-color: #fff;
         border: 3px solid #000;
         color: #000;
         border-radius: 5px;
         height: 100%;
-        width: 6vw;
-        margin: auto;
+        padding: 0.5vw 1vw;
         margin-top: 2vh;
-        display: block;
     }
 
     button:hover {
         cursor: pointer;
+    }
+
+    .ans {
+        font-size: 1.2em;
     }
 </style>
