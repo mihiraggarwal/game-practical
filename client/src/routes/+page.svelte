@@ -18,20 +18,39 @@
         public node_number: number
         public player: number
         public children: Array<Node>
+        public actions: Array<string>
+        public payoffs: Array<number>
 
         constructor(
-            node_number: number = 0,
+            node_number: number,
             player: number = 0,
             children: Array<Node> = [],
+            actions: Array<string> = [],
+            payoffs: Array<number> = [],
         ) {
             this.node_number = node_number;
             this.player = player;
             this.children = children;
+            this.actions = actions;
+            this.payoffs = payoffs;
         }
     }
 
     const node = new Node($global_node_num)
     global_node_num.update(n => n+1)
+
+    const solve = () => {
+        const display_node = (n: Node) => {
+            if (n.payoffs.length > 0) console.log(n)
+            else {
+                console.log(n)
+                n.children.forEach((element: Node) => {
+                    display_node(element)
+                });
+            }
+        }
+        display_node(node)
+    }
 </script>
 
 <h1>game-practical</h1>
@@ -45,14 +64,9 @@
 
     <Subtree node={node} Node_class={Node} />
 
-    <!-- 
-        way to display tree:
-        - second row, nodes are spaced-evenly along full width
-        - if a row is added, all previous rows' widths are halved along right and left extremes
-        - a node's children will get the width of that node / (it + n(siblings))
-    -->
-
 </div>
+
+<button on:click={solve}>Solve</button>
 
 <style>
     h1 {
@@ -70,5 +84,21 @@
         display: flex;
         align-items: center;
         flex-direction: column;
+    }
+
+    button {
+        background-color: #fff;
+        border: 3px solid #000;
+        color: #000;
+        border-radius: 5px;
+        height: 100%;
+        width: 6vw;
+        margin: auto;
+        margin-top: 2vh;
+        display: block;
+    }
+
+    button:hover {
+        cursor: pointer;
     }
 </style>

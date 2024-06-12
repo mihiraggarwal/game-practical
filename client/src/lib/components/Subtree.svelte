@@ -16,7 +16,7 @@
 
     let wid_arr: Array<number> = []
 
-    let choice = 1;
+    let choice: number;
     let action_counter = 0;
     let node_num = node.node_number
 
@@ -38,6 +38,8 @@
 
     $: if (choice == 0) {
         node.player = playerNum;
+    } else if (choice == 1) {
+        node.payoffs = payoffval.split(",").map((x) => parseInt(x))
     }
 
     // the for loop was being run infinitely since node_num was being updated at every recursive backtrack
@@ -49,6 +51,7 @@
     const update_children = (kids: Array<string>) => {
         if (kids.length > 0) {
             for (let i = 0; i < kids.length; i++) {
+                node.actions = children
                 const new_node = new Node_class($global_node_num)
                 global_node_num.update(n => n+1)
                 node.children.push(new_node)

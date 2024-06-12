@@ -57,7 +57,7 @@
         const btn = document.getElementById(`plus-btn-node-${node_num}`)
         btn!.style.borderRadius = "0"
         payoffval = (document.getElementById(`payoff_input_${node_num}`) as HTMLInputElement).value
-        enter(payoffval)
+        enter(`(${payoffval})`)
     }
 </script>
 
@@ -79,7 +79,7 @@
 
     <div class="payoff" id="payoff_{node_num}">
         <div>Payoff: </div>
-        <input type="text" name="payoff" class="payoff_input" id="payoff_input_{node_num}" />
+        (<input type="text" name="payoff" class="payoff_input" id="payoff_input_{node_num}" />)
         <button class="optionBtn" on:click={payoffEnter}>Enter</button>
     </div>
 </dialog>
