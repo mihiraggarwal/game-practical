@@ -1,7 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
 
-from api.solver import main, Node
 
 app = Flask(__name__)
 CORS(app)
@@ -10,8 +9,11 @@ CORS(app)
 def index():
     return "game-practical"
 
+from solver import main, Node
 @app.route("/solve", methods=["GET", "POST"])
 def solve():
+    if request.method == "GET":
+        return "solve"
     node = request.json
     node = convert_to_class(node)
     return main(node)
