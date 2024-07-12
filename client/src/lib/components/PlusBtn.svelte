@@ -9,23 +9,27 @@
     
     let dialog: HTMLDialogElement;
 
+    let selected: number;
+
     const btnClick = () => {
         dialog = document.getElementById(`dlg-${node_num}`) as HTMLDialogElement;
         dialog!.showModal()
     }
 
     const moveBtn = () => {
+        selected = 0;
         const player_input = document.getElementById(`player_num_${node_num}`) as HTMLInputElement
         const payoff_input = document.getElementById(`payoff_${node_num}`) as HTMLInputElement
         payoff_input!.style.display = "none"
-        player_input!.style.display = "block"
+        player_input!.style.display = "flex"
     }
         
     const payoffBtn = () => {
+        selected = 1;
         const payoff_input = document.getElementById(`payoff_${node_num}`) as HTMLInputElement
         const player_input = document.getElementById(`player_num_${node_num}`) as HTMLInputElement
         player_input!.style.display = "none"
-        payoff_input!.style.display = "block"
+        payoff_input!.style.display = "flex"
     }
 
     const enter = (val: string) => {
@@ -45,7 +49,8 @@
         dialog!.close()
     }
 
-    const playerEnter = () => {
+    const playerEnter = (event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement; }) => {
+        event.preventDefault()
         choice = 0;
         const btn = document.getElementById(`plus-btn-node-${node_num}`)
         btn!.style.borderRadius = "50%"
@@ -55,7 +60,8 @@
         enter(playerNum)
     }
         
-    const payoffEnter = () => {
+    const payoffEnter = (event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement; }) => {
+        event.preventDefault()
         choice = 1;
         const btn = document.getElementById(`plus-btn-node-${node_num}`)
         btn!.style.borderRadius = "5px"
@@ -73,19 +79,21 @@
 </div>
 
 <dialog class="dlg" id="dlg-{node_num}">
-    <button class="optionBtn" on:click={moveBtn}>Move</button>
-    <button class="optionBtn" on:click={payoffBtn}>Payoff</button>
+    <div class="dialog">
+        <div class="top_btns">
+            <button class="optionBtn" class:selected={selected==0} on:click={moveBtn}>Move</button>
+            <button class="optionBtn" class:selected={selected==1} on:click={payoffBtn}>Payoff</button>
+        </div>
 
-    <div class="player_num" id="player_num_{node_num}">
-        <div>Player: </div>
-        <input type="number" name="player_num" class="player_input" id="player_input_{node_num}" />
-        <button class="optionBtn" on:click={playerEnter}>Enter</button>
-    </div>
+        <form class="player_num" id="player_num_{node_num}" on:submit={(event) => playerEnter(event)}>
+            <input type="number" name="player_num" class="player_input" id="player_input_{node_num}" placeholder="Player Number" required />
+            <button class="optionBtn">Enter</button>
+        </form>
 
-    <div class="payoff" id="payoff_{node_num}">
-        <div>Payoff: </div>
-        (<input type="text" name="payoff" class="payoff_input" id="payoff_input_{node_num}" />)
-        <button class="optionBtn" on:click={payoffEnter}>Enter</button>
+        <form class="payoff" id="payoff_{node_num}" on:submit={(event) => payoffEnter(event)}>
+            <input type="text" name="payoff" class="payoff_input" id="payoff_input_{node_num}" placeholder="Payoff (example: 1,2)" required />
+            <button class="optionBtn" id="enterBtn">Enter</button>
+        </form>
     </div>
 </dialog>
 
@@ -109,11 +117,59 @@
         font-size: 2em;
     }
 
+    input {
+        border: 3px solid #000;
+        border-radius: 5px;
+        padding: 0.5vh 0.5vw;
+        font-size: 1em;
+    }
+
     .player_num {
-        display: none
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 3vh;
     }
 
     .payoff {
-        display: none
+        display: none;
+        flex-direction: column;
+        gap: 3vh;
+        align-items: center;
+    }
+
+    dialog {
+        border: 3px solid #000;
+        border-radius: 5px;
+        padding: 3vh 2vw;
+    }
+
+    .dialog {
+        display: flex;
+        flex-direction: column;
+        gap: 2vh;
+        justify-content: center;
+    }
+
+    .optionBtn {
+        background-color: #fff;
+        border: 3px solid #000;
+        color: #000;
+        border-radius: 5px;
+        font-size: 1em;
+        padding: 0.3em 1em
+    }
+
+    .selected {
+        background-color: #000;
+        color: #fff;
+    }
+
+    .optionBtn:hover {
+        cursor: pointer;
+    }
+
+    #enterBtn {
+        width: auto;
     }
 </style>
