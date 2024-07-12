@@ -128,15 +128,18 @@ def main(n0):
     s = ""
 
     for k in range(len(arr)):
-        s0, s1 = [], []
+        nplayers = 0
+        for i in range(len(arr[k])-1, -1, -1):
+            if "action" in arr[k][i].keys():
+                if arr[k][i]["player"] > nplayers:
+                    nplayers = arr[k][i]["player"]
+        sp = [[] for _ in range(nplayers + 1)]
+
         s += f"SPNE payoff: {arr[k][-1]['payoff']}\n"
         for i in range(len(arr[k])-1, -1, -1):
             if "action" in arr[k][i].keys():
-                if arr[k][i]["player"] == 0:
-                    s0.append({f"n{arr[k][i]['num']}": arr[k][i]["action"]})
-                else:
-                    s1.append({f"n{arr[k][i]['num']}": arr[k][i]["action"]})
-        s += f"SPNE strategy profile: ({s0}, {s1})\n"
+                sp[arr[k][i]["player"]].append({f"n{arr[k][i]['num']}": arr[k][i]["action"]})
+        s += f"SPNE strategy profile: ({', '.join(list(map(str, sp)))})\n"
     
     return s
 
