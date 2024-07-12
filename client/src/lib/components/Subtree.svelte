@@ -8,6 +8,7 @@
 
     export let node;
     export let Node_class;
+    export let action = "";
 
     export let widt: number = 0;
 
@@ -83,7 +84,14 @@
 </script>
 
 <div class="initial" id="initial-{node_num}">
-    <div class="line"></div>
+    {#if (action != "")}
+        <div class="top_line">
+            <div class="line top"></div>
+            <div>{action}</div>
+            <div class="line top"></div>
+        </div>
+    {/if}
+
     <div class="inner_initial">
         <div class="main_node">
         <PlusBtn bind:choice={choice} bind:playerNum={playerNum} bind:payoffval={payoffval} node_num={node.node_number} />
@@ -101,7 +109,7 @@
     <div class="child_nodes">
         {#if (node.children.length != 0)}
             {#each node.children as n, i}
-                <svelte:self node={n} Node_class={Node_class} bind:widt={wid_arr[i]} />
+                <svelte:self node={n} Node_class={Node_class} bind:widt={wid_arr[i]} action={children[i]} />
             {/each}
         {/if}
     </div>
@@ -125,10 +133,20 @@
         flex-direction: column;
     }
 
+    .top_line {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     .line {
         width: 0;
         height: 5vh;
         border: 1px solid #000;
+    }
+
+    .top {
+        height: 2.5vh;
     }
 
     hr {
