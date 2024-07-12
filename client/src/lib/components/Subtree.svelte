@@ -17,7 +17,6 @@
     let wid_arr: Array<number> = []
 
     let choice: number;
-    let action_counter = 0;
     let node_num = node.node_number
 
     let playerNum: string;
@@ -49,8 +48,9 @@
     // soln: wrap in a function and only have the reactivity on children
 
     const update_children = (kids: Array<string>) => {
+        const wlen = wid_arr.length
         if (kids.length > 0) {
-            for (let i = 0; i < kids.length; i++) {
+            for (let i = 0; i < (kids.length - wlen); i++) {
                 node.actions = children
                 const new_node = new Node_class($global_node_num)
                 global_node_num.update(n => n+1)
@@ -89,7 +89,7 @@
         <PlusBtn bind:choice={choice} bind:playerNum={playerNum} bind:payoffval={payoffval} node_num={node.node_number} />
         {#if (choice == 0)}
             <div class="action_div">
-                <ActionBtn bind:action_counter={action_counter} bind:children={children} node_num={node.node_number} />
+                <ActionBtn bind:children={children} node_num={node.node_number} />
             </div>
         {/if}
         </div>
@@ -101,13 +101,7 @@
     <div class="child_nodes">
         {#if (node.children.length != 0)}
             {#each node.children as n, i}
-                {#if (i == 0)}
-                    <svelte:self node={n} Node_class={Node_class} bind:widt={wid_arr[i]} />
-                {:else if (i == node.children.length-1)}
-                    <svelte:self node={n} Node_class={Node_class} bind:widt={wid_arr[i]} />
-                {:else}
-                    <svelte:self node={n} Node_class={Node_class} bind:widt={wid_arr[i]} />
-                {/if}
+                <svelte:self node={n} Node_class={Node_class} bind:widt={wid_arr[i]} />
             {/each}
         {/if}
     </div>

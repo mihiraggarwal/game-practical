@@ -1,9 +1,9 @@
 <script lang="ts">
-    export let action_counter: number
     export let children: Array<string>
     export let node_num: number
 
     let dialog: HTMLDialogElement;
+    let action_counter: number = 0;
     
     const add_action = () => {
         dialog = document.getElementById(`action_modal-${node_num}`) as HTMLDialogElement;
