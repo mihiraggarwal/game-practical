@@ -87,7 +87,7 @@
     {#if (action != "")}
         <div class="top_line">
             <div class="line top"></div>
-            <div>{action}</div>
+            <div class="action">{action}</div>
             <div class="line top"></div>
         </div>
     {/if}
@@ -129,6 +129,11 @@
         display: flex;
         flex-direction: row;
         gap: 1vw;
+    }
+
+    .action {
+        font-family: "Inter";
+        font-size: 1em;
     }
 
     .inner_initial {

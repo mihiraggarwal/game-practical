@@ -20,7 +20,7 @@
     }
 </script>
 
-<button type="button" class="action_btn" on:click={add_action}>Add action</button>
+<button type="button" class="action_btn" on:click={add_action}>Add Action</button>
 
 <dialog class="action_modal" id="action_modal-{node_num}">
     <div class="modal_div">
@@ -48,7 +48,8 @@
         color: #000;
         border-radius: 5px;
         height: 100%;
-        width: 6vw;
+        width: 8vw;
+        font-size: 1em;
     }
 
     .action_btn:hover {

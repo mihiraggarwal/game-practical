@@ -38,6 +38,7 @@
         const new_val = document.createElement("div")
         new_val.className = `plus ${node_num}`
         new_val.innerHTML = val
+        new_val.style.fontSize = "1.25em"
 
         plus_btn!.appendChild(new_val)
         
@@ -48,6 +49,8 @@
         choice = 0;
         const btn = document.getElementById(`plus-btn-node-${node_num}`)
         btn!.style.borderRadius = "50%"
+        btn!.style.borderWidth = "3px"
+        btn!.style.padding = "0"
         playerNum = (document.getElementById(`player_input_${node_num}`) as HTMLInputElement).value
         enter(playerNum)
     }
@@ -55,7 +58,9 @@
     const payoffEnter = () => {
         choice = 1;
         const btn = document.getElementById(`plus-btn-node-${node_num}`)
-        btn!.style.borderRadius = "0"
+        btn!.style.borderRadius = "5px"
+        btn!.style.borderWidth = "3px"
+        btn!.style.padding = "0 2vw"
         payoffval = (document.getElementById(`payoff_input_${node_num}`) as HTMLInputElement).value
         enter(`(${payoffval})`)
     }
