@@ -12,7 +12,6 @@
     import Subtree from "$lib/components/Subtree.svelte";
     import { global_node_num } from "$lib/stores";
 
-    let nPlayers: number;
     let answer: string = "";
 
     class Node {
@@ -53,34 +52,37 @@
     }
 </script>
 
-<h1>game-practical</h1>
-<div class="pre-tree">
-    <label for="players">Number of players</label>
-    <input type="number" id="players" name="players" bind:value={nPlayers} required />
-</div>
-<br /><br />
+<div class="container">
+    <h1>game-practical</h1>
 
-<div class="tree">
+    <div class="tree">
 
-    <Subtree node={node} Node_class={Node} />
+        <Subtree node={node} Node_class={Node} />
 
-</div>
+    </div>
 
-<div class="answer-container">
-    <button on:click={solve}>SPNE</button>
-    <div class="ans">{answer}</div>
+    <div class="answer-container">
+        <button on:click={solve}>SPNE</button>
+        <div class="ans">{answer}</div>
+    </div>
 </div>
 
 <style>
-    h1 {
-        font-family: "Inter";
-        text-align: center;
+    .container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 5vh 5vw;
+        box-sizing: border-box;
+        gap: 7.5vh;
     }
 
-    .pre-tree {
-        display: flex;
-        justify-content: center;
-        gap: 1vw
+    h1 {
+        font-family: "airbnb-bold";
+        text-align: center;
+        font-size: 2.25em;
+        margin: 0;
     }
 
     .tree {
@@ -100,10 +102,11 @@
         background-color: #fff;
         border: 3px solid #000;
         color: #000;
-        border-radius: 5px;
+        /* font-weight: bold; */
+        border-radius: 7px;
         height: 100%;
         padding: 0.5vw 1vw;
-        margin-top: 2vh;
+        font-size: 1em;
     }
 
     button:hover {

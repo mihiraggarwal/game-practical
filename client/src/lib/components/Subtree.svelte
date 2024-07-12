@@ -102,8 +102,11 @@
         {/if}
         </div>
     </div>
-    <div class="line"></div>
-    
+
+    {#if (children.length > 0)}
+        <div class="line"></div>
+    {/if}
+        
     <hr id="hr-{node_num}"/>
 
     <div class="child_nodes">
