@@ -15,6 +15,10 @@
     $: for (let p of pr[$profile_index].flat(2)) {
         if ((p.num == node_num) || (p.destination == node_num)) {
             colour = true;
+            break;
+        }
+        else {
+            colour = false;
         }
     }
     
@@ -185,8 +189,7 @@
     }
 
     .colour {
-        border: 5px solid #16e16e;
-        color: #16e16e;
-        font-weight: bold;
+        border: 5px solid;
+        background-color: #16e16e;
     }
 </style>

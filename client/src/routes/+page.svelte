@@ -10,9 +10,12 @@
     */
 
     import Subtree from "$lib/components/Subtree.svelte";
-    import { global_node_num, profile } from "$lib/stores";
+    import { global_node_num, profile, profile_index } from "$lib/stores";
 
     let payoffs: Array<number>;
+
+    let nSolns = 0;
+    let selected = 0;
 
     class Node {
         public node_number: number
@@ -48,8 +51,14 @@
             resp.json().then(data => {
                 payoffs = data.payoffs
                 profile.update(n => data.profile)
+                nSolns = data.profile.length
             })
         })
+    }
+
+    const select = (i: number) => {
+        selected = i
+        profile_index.update(n => i)
     }
 </script>
 
@@ -57,7 +66,7 @@
     <div class="top">
         <h1>game-practical</h1>
         {#if (payoffs)}
-            <div class="payoff">Payoff: ({payoffs})</div>
+            <div class="payoff">Payoff: ({payoffs[$profile_index]})</div>
         {/if}
     </div>
 
@@ -68,6 +77,11 @@
     </div>
 
     <div class="answer-container">
+        <div class="index_container">
+            {#each Array.from({ length: nSolns }) as _, i}
+                <button class="soln_index" class:selected={selected==i} on:click={() => select(i)}></button>
+            {/each}
+        </div>
         <button on:click={solve}>SPNE</button>
     </div>
 </div>
@@ -128,5 +142,23 @@
 
     button:hover {
         cursor: pointer;
+    }
+
+    .soln_index {
+        border: 3px solid #000;
+        border-radius: 100%;
+        width: 2vw;
+        height: 2vw;
+        padding: 0;
+    }
+
+    .index_container {
+        display: flex;
+        gap: 1vw;
+        flex-direction: row;
+    }
+
+    .selected {
+        background-color: #16e16e;
     }
 </style>
