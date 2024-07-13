@@ -11,6 +11,9 @@
     export let action = "";
 
     export let widt: number = 0;
+    export let initial = false;
+
+    export let colour = false;
 
     let node_wid: number;
     let doc_wid: number;
@@ -20,16 +23,19 @@
     let choice: number;
     let node_num = node.node_number
 
-    let colour = false;
+    let child_colour_num: number;
+    let line_colour: boolean = colour;
 
     $: pr = $profile
     $: for (let p of pr[$profile_index].flat(2)) {
-        if ((p.num == node_num) || (p.destination == node_num)) {
-            colour = true;
-            break;
-        }
-        else {
-            colour = false;
+        if (p.num == node_num) {
+            line_colour = true;
+            for (let a = 0; a < node.actions.length; a++) {
+                if (node.actions[a] == p.action) {
+                    child_colour_num = node.children[a].node_number
+                    break;
+                }
+            }
         }
     }
 
@@ -107,17 +113,17 @@
 
     <div class="inner_initial">
         <div class="main_node">
-        <PlusBtn bind:choice={choice} bind:playerNum={playerNum} bind:payoffval={payoffval} node_num={node.node_number} />
+        <PlusBtn bind:choice={choice} bind:playerNum={playerNum} bind:payoffval={payoffval} node_num={node.node_number} initial={initial} colour={colour} />
         {#if (choice == 0)}
             <div class="action_div">
-                <ActionBtn bind:children={children} node_num={node.node_number} />
+                <ActionBtn bind:children={children} node_num={node.node_number} initial={initial} colour={colour} />
             </div>
         {/if}
         </div>
     </div>
 
     {#if (children.length > 0)}
-        <div class="line" class:colour={colour}></div>
+        <div class="line" class:colour={initial || colour || line_colour}></div>
     {/if}
         
     <hr id="hr-{node_num}"/>
@@ -125,7 +131,7 @@
     <div class="child_nodes">
         {#if (node.children.length != 0)}
             {#each node.children as n, i}
-                <svelte:self node={n} Node_class={Node_class} bind:widt={wid_arr[i]} action={children[i]} profile={profile} />
+                <svelte:self node={n} Node_class={Node_class} bind:widt={wid_arr[i]} action={children[i]} profile={profile} colour={child_colour_num==n.node_number} />
             {/each}
         {/if}
     </div>

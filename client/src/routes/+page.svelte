@@ -72,7 +72,7 @@
 
     <div class="tree">
 
-        <Subtree node={node} Node_class={Node} />
+        <Subtree node={node} Node_class={Node} initial={nSolns > 0 ? true : false} />
 
     </div>
 
