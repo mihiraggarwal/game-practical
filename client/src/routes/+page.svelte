@@ -10,9 +10,9 @@
     */
 
     import Subtree from "$lib/components/Subtree.svelte";
-    import { global_node_num } from "$lib/stores";
+    import { global_node_num, profile } from "$lib/stores";
 
-    let answer: string = "";
+    let payoffs: Array<number>;
 
     class Node {
         public node_number: number
@@ -45,15 +45,21 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(node)
         }).then(resp => {
-            resp.text().then(data => {
-                answer = data
+            resp.json().then(data => {
+                payoffs = data.payoffs
+                profile.update(n => data.profile)
             })
         })
     }
 </script>
 
 <div class="container">
-    <h1>game-practical</h1>
+    <div class="top">
+        <h1>game-practical</h1>
+        {#if (payoffs)}
+            <div class="payoff">Payoff: ({payoffs})</div>
+        {/if}
+    </div>
 
     <div class="tree">
 
@@ -63,7 +69,6 @@
 
     <div class="answer-container">
         <button on:click={solve}>SPNE</button>
-        <div class="ans">{answer}</div>
     </div>
 </div>
 
@@ -76,6 +81,18 @@
         padding: 5vh 5vw;
         box-sizing: border-box;
         gap: 7.5vh;
+    }
+
+    .top {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2vh;
+    }
+
+    .payoff {
+        font-family: "Inter";
+        font-size: 1.5em;
     }
 
     h1 {
@@ -111,9 +128,5 @@
 
     button:hover {
         cursor: pointer;
-    }
-
-    .ans {
-        font-size: 1.2em;
     }
 </style>

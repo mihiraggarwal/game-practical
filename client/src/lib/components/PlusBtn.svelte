@@ -1,11 +1,22 @@
 <script lang="ts">
 
+    import { profile, profile_index } from "$lib/stores"
+
     export let choice;
 
     export let playerNum;
     export let payoffval;
 
     export let node_num
+
+    let colour: boolean = false;
+
+    $: pr = $profile
+    $: for (let p of pr[$profile_index].flat(2)) {
+        if ((p.num == node_num) || (p.destination == node_num)) {
+            colour = true;
+        }
+    }
     
     let dialog: HTMLDialogElement;
 
@@ -73,8 +84,8 @@
 </script>
 
 <div class="main">
-    <button class="plus-btn" id="plus-btn-node-{node_num}" on:click={btnClick}>
-        <i class="fa fa-plus plus {node_num}" id="plus-node-{node_num}"></i>
+    <button class="plus-btn" class:colour={colour} id="plus-btn-node-{node_num}" on:click={btnClick}>
+        <i class="fa fa-plus plus {node_num}" class:colour={colour} id="plus-node-{node_num}"></i>
     </button>
 </div>
 
@@ -171,5 +182,11 @@
 
     #enterBtn {
         width: auto;
+    }
+
+    .colour {
+        border: 5px solid #16e16e;
+        color: #16e16e;
+        font-weight: bold;
     }
 </style>

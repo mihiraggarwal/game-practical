@@ -1,9 +1,21 @@
 <script lang="ts">
+
+    import { profile, profile_index } from "$lib/stores"
+
     export let children: Array<string>
     export let node_num: number
+    
+    let colour: boolean = false
 
     let dialog: HTMLDialogElement;
     let action_counter: number = 0;
+
+    $: pr = $profile
+    $: for (let p of pr[$profile_index].flat(2)) {
+        if ((p.num == node_num) || (p.destination == node_num)) {
+            colour = true;
+        }
+    }
     
     const add_action = () => {
         dialog = document.getElementById(`action_modal-${node_num}`) as HTMLDialogElement;
@@ -21,7 +33,7 @@
     }
 </script>
 
-<button type="button" class="action_btn" on:click={add_action}>Add Action</button>
+<button type="button" class="action_btn" class:colour={colour} on:click={add_action}>Add Action</button>
 
 <dialog class="action_modal" id="action_modal-{node_num}">
     <form class="modal_div" on:submit={(event) => {enter(event)}}>
@@ -80,7 +92,7 @@
     .action_component {
         display: flex;
         flex-direction: column;
-        gap: 1vh;
+        gap: 0.5vh;
         align-items: flex-start;
     }
 
@@ -114,5 +126,10 @@
         display: flex;
         justify-content: center;
         gap: 0.5vw;
+    }
+
+    .colour {
+        border-color: #16e16e;
+        color: #16e16e;
     }
 </style>

@@ -116,7 +116,8 @@ def spne(arr: list, node: "Node"):
                 "action": actions[i],
                 "payoff": payoffs[i],
                 "player": players[i],
-                "num": nums[i]
+                "num": nums[i],
+                "destination": n[i].node_number
             }])
 
         final_arr.extend(another_arr)
@@ -125,7 +126,8 @@ def spne(arr: list, node: "Node"):
 
 def main(n0):
     n, arr = spne([], n0)
-    s = ""
+    payoffs = []
+    s = []
 
     for k in range(len(arr)):
         nplayers = 0
@@ -134,14 +136,18 @@ def main(n0):
                 if arr[k][i]["player"] > nplayers:
                     nplayers = arr[k][i]["player"]
         sp = [[] for _ in range(nplayers + 1)]
-
-        s += f"SPNE payoff: {arr[k][-1]['payoff']}\n"
+        payoffs.append(arr[k][-1]['payoff'])
+        
         for i in range(len(arr[k])-1, -1, -1):
             if "action" in arr[k][i].keys():
-                sp[arr[k][i]["player"]].append({f"n{arr[k][i]['num']}": arr[k][i]["action"]})
-        s += f"SPNE strategy profile: ({', '.join(list(map(str, sp)))})\n"
+                # sp[arr[k][i]["player"]].append({arr[k][i]['num']: arr[k][i]["action"]})
+                sp[arr[k][i]["player"]].append(arr[k][i])
+        s.append(sp)
     
-    return s
+    return {
+        "payoffs": payoffs,
+        "profile": s
+    }
 
 
 ################################# trial runs #################################

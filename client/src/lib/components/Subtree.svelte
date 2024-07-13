@@ -4,7 +4,7 @@
 
     import { onMount, afterUpdate } from 'svelte';
 
-    import { global_node_num } from "$lib/stores"
+    import { global_node_num, profile, profile_index } from "$lib/stores"
 
     export let node;
     export let Node_class;
@@ -19,6 +19,15 @@
 
     let choice: number;
     let node_num = node.node_number
+
+    let colour = false;
+
+    $: pr = $profile
+    $: for (let p of pr[$profile_index].flat(2)) {
+        if ((p.num == node_num) || (p.destination == node_num)) {
+            colour = true;
+        }
+    }
 
     let playerNum: string;
     let payoffval: string;
@@ -86,9 +95,9 @@
 <div class="initial" id="initial-{node_num}">
     {#if (action != "")}
         <div class="top_line">
-            <div class="line top"></div>
-            <div class="action">{action}</div>
-            <div class="line top"></div>
+            <div class="line top" class:colour={colour}></div>
+            <div class="action" class:colour={colour}>{action}</div>
+            <div class="line top" class:colour={colour}></div>
         </div>
     {/if}
 
@@ -104,7 +113,7 @@
     </div>
 
     {#if (children.length > 0)}
-        <div class="line"></div>
+        <div class="line" class:colour={colour}></div>
     {/if}
         
     <hr id="hr-{node_num}"/>
@@ -112,7 +121,7 @@
     <div class="child_nodes">
         {#if (node.children.length != 0)}
             {#each node.children as n, i}
-                <svelte:self node={n} Node_class={Node_class} bind:widt={wid_arr[i]} action={children[i]} />
+                <svelte:self node={n} Node_class={Node_class} bind:widt={wid_arr[i]} action={children[i]} profile={profile} />
             {/each}
         {/if}
     </div>
@@ -155,6 +164,11 @@
 
     .top {
         height: 2.5vh;
+    }
+
+    .colour {
+        border-color: #16e16e;
+        color: #16e16e;
     }
 
     hr {
