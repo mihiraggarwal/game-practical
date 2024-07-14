@@ -17,6 +17,8 @@
     let nSolns = 0;
     let selected = 0;
 
+    let loading = false;
+
     class Node {
         public node_number: number
         public player: number
@@ -43,6 +45,7 @@
     global_node_num.update(n => n+1)
 
     const solve = () => {
+        loading = true
         fetch(`${PUBLIC_SERVER_URL}/solve`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -52,6 +55,7 @@
                 payoffs = data.payoffs
                 profile.update(n => data.profile)
                 nSolns = data.profile.length
+                loading = false
             })
         })
     }
@@ -82,7 +86,7 @@
                 <button class="soln_index" class:selected={selected==i} on:click={() => select(i)}></button>
             {/each}
         </div>
-        <button on:click={solve}>SPNE</button>
+        <button on:click={solve} class:loading={loading} disabled={loading}>{loading ? "Loading" : "SPNE"}</button>
     </div>
 </div>
 
@@ -160,5 +164,13 @@
 
     .selected {
         background-color: #16e16e;
+    }
+
+    .loading {
+        background-color: gray;
+    }
+
+    .loading:hover {
+        cursor: not-allowed;
     }
 </style>
