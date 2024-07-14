@@ -34,7 +34,8 @@
             {#each {length: action_counter + 1} as _, i}
             <div class="indi_action">
                 <div class="action_ntm">{i+1}.</div>
-                <input type="text" class="action_input {node_num}" required>
+                <!-- svelte-ignore a11y-autofocus -->
+                <input type="text" class="action_input {node_num}" required autofocus>
             </div>
             {/each}
         </div>

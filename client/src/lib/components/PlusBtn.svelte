@@ -25,6 +25,9 @@
         const payoff_input = document.getElementById(`payoff_${node_num}`) as HTMLInputElement
         payoff_input!.style.display = "none"
         player_input!.style.display = "flex"
+
+        const input_box = document.getElementById(`player_input_${node_num}`)
+        input_box!.focus()
     }
         
     const payoffBtn = () => {
@@ -33,6 +36,9 @@
         const player_input = document.getElementById(`player_num_${node_num}`) as HTMLInputElement
         player_input!.style.display = "none"
         payoff_input!.style.display = "flex"
+
+        const input_box = document.getElementById(`payoff_input_${node_num}`)
+        input_box!.focus()
     }
 
     const enter = (val: string) => {
@@ -94,7 +100,7 @@
         </form>
 
         <form class="payoff" id="payoff_{node_num}" on:submit={(event) => payoffEnter(event)}>
-            <input type="text" name="payoff" class="payoff_input" id="payoff_input_{node_num}" placeholder="Payoff (example: 1,2)" required />
+            <input type="text" name="payoff" class="payoff_input" id="payoff_input_{node_num}" placeholder="Payoff (example: 1,2)" required pattern="^\d+(,\d+)*\d?$" />
             <button class="optionBtn" id="enterBtn">Enter</button>
         </form>
     </div>
