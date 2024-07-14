@@ -91,6 +91,7 @@
             const hr_width = old_width < new_width ? old_width : new_width
 
             const hr = document.getElementById(`hr-${node_num}`)
+            hr!.style.display = "block"
             hr!.style.width = `${hr_width}vw`
             hr!.style.marginLeft = `${wid_arr[0]/2}vw`
             hr!.style.marginRight = `${wid_arr[wid_arr.length - 1]/2}vw`
@@ -182,6 +183,7 @@
     }
 
     hr {
+        display: none;
         width: 0;
         color: #000;
         border: 1px solid #000;
