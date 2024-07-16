@@ -46,6 +46,8 @@ def all_perms(max_ls):
             cr.append([i, *prev[j]])
     return cr
 
+################################# SPNE #################################
+
 def subnash(node: "Node"):
     ch = node.children
     maxp = [len(i)-1 for i in ch]
@@ -124,6 +126,115 @@ def spne(arr: list, node: "Node"):
 
     return sub_nodes, final_arr
 
+################################# Nash Equilibrium #################################
+
+def get_strategies(n0, strategy_sets):
+    # identify all information sets first
+    # then define a strategy as an action for each information set - find all strategies
+    
+    # base case
+    if n0.payoffs != []:
+        return {}
+
+    # induction hypothesis
+    interm = {}
+    for i in range(len(n0.children)):
+        strategy_sets = get_strategies(n0.children[i][0], strategy_sets)
+        for j in strategy_sets.keys():
+            m = []
+            for k in range(len(strategy_sets[j])):
+                if j in interm.keys():
+                    for l in range(len(interm[j])):
+                        m.append([*interm[j][l], *strategy_sets[j][k]])
+                else:
+                    m.append(strategy_sets[j][k])
+            interm[j] = m
+
+    # induction step
+    strategy_sets = interm
+    k = []
+    player = n0.player
+    for i in range(len(n0.actions)):
+        if player in strategy_sets.keys():
+            for j in range(len(strategy_sets[player])):
+                k.append([*strategy_sets[player][j], {
+                    "node": n0.node_number,
+                    "action": n0.actions[i],
+                    "index": i
+                }])
+        else:
+            k.append([{
+                "node": n0.node_number,
+                "action": n0.actions[i],
+                "index": i
+            }])
+    strategy_sets[player] = k
+
+    return strategy_sets
+
+def get_matrix(n0):
+    strategy_sets = get_strategies(n0, {})
+    
+    nplayers = max(strategy_sets.keys()) + 1
+    indices = all_perms([len(strategy_sets[i]) - 1 for i in range(nplayers)])
+
+    import numpy as np
+    arr = np.ndarray(tuple([len(strategy_sets[i]) for i in range(nplayers)]), np.ndarray)
+
+    for i in range(len(indices)):
+        # get strategy profile
+        k = []
+        for j in range(len(indices[i])):
+            k.extend(strategy_sets[j][indices[i][j]])
+
+        # get payoffs
+        node = n0
+        while node.payoffs == []:
+            for m in range(len(k)):
+                if k[m]["node"] == node.node_number:
+                    node = node.children[k[m]["index"]][0]
+                    break
+        
+        arr[*indices[i]] = {
+            "strategy_profile": k,
+            "payoff": node.payoffs
+        }
+
+    return arr, nplayers, strategy_sets
+
+def nash_eq(n0):
+    arr, nplayers, strategy_sets = get_matrix(n0)
+    best_responses = []
+
+    for l in range(nplayers):
+        indices = all_perms([len(strategy_sets[i]) - 1 for i in range(nplayers) if i != l])
+
+        # set up indices to hold all other players' strategies constant
+        for j in range(len(indices)):
+            indices[j].insert(l, slice(None))
+
+            max_payoff_arr = [{"payoff": [float("-inf") for _ in range(nplayers)]}]
+
+            for k in range(len(arr[*indices[j]])):
+                sub_dict = arr[*indices[j]][k]
+                if sub_dict["payoff"][l] > max_payoff_arr[0]["payoff"][l]:
+                    max_payoff_arr = [sub_dict]
+                elif sub_dict["payoff"][l] == max_payoff_arr[0]["payoff"][l]:
+                    max_payoff_arr.append(sub_dict)
+
+            best_responses.extend(max_payoff_arr)
+
+    final_responses = []
+
+    # see if a strategy profile is a best response as many times as there are players
+    for i in range(len(best_responses)):
+        if best_responses.count(best_responses[i]) >= nplayers and best_responses[i] not in final_responses:
+            final_responses.append(best_responses[i])
+    
+    return final_responses
+
+################################# Main #################################
+
 def main(n0):
     n, arr = spne([], n0)
     payoffs = []
@@ -152,94 +263,96 @@ def main(n0):
 
 ################################# trial runs #################################
 
-    # n0 = Node(node_number=0, player=0, children=[], actions=("S", "C"))
+# n0 = Node(node_number=0, player=0, children=[], actions=("S", "C"))
 
-    # n1 = Node(node_number=1, player=1, children=[], actions=("S", "C"))
-    # n0.children.append([n1])
+# n1 = Node(node_number=1, player=1, children=[], actions=("S", "C"))
+# n0.children.append([n1])
 
-    # n2 = Node(node_number=2, player=1, children=[], actions=("S", "C"))
-    # n0.children.append([n2])
+# n2 = Node(node_number=2, player=1, children=[], actions=("S", "C"))
+# n0.children.append([n2])
 
-    # n3 = Node(node_number=3, payoffs=(2,1))
-    # n1.children.append([n3])
+# n3 = Node(node_number=3, payoffs=(2,1))
+# n1.children.append([n3])
 
-    # n4 = Node(node_number=4, payoffs=(0,0))
-    # n1.children.append([n4])
+# n4 = Node(node_number=4, payoffs=(0,0))
+# n1.children.append([n4])
 
-    # n5 = Node(node_number=5, payoffs=(0,0))
-    # n2.children.append([n5])
+# n5 = Node(node_number=5, payoffs=(0,0))
+# n2.children.append([n5])
 
-    # n6 = Node(node_number=6, payoffs=(1,2))
-    # n2.children.append([n6])
-
-
-    # n0 = Node(node_number=0, player=0, children=[], actions=(0, 1, 2))
-
-    # n1 = Node(node_number=1, player=1, children=[], actions=("A", "R"))
-    # n0.children.append([n1])
-
-    # n2 = Node(node_number=2, player=1, children=[], actions=("A", "R"))
-    # n0.children.append([n2])
-
-    # n3 = Node(node_number=3, player=1, children=[], actions=("A", "R"))
-    # n0.children.append([n3])
-
-    # n4 = Node(node_number=4, payoffs=(2,0))
-    # n1.children.append([n4])
-
-    # n5 = Node(node_number=5, payoffs=(0,0))
-    # n1.children.append([n5])
-
-    # n6 = Node(node_number=6, payoffs=(1,1))
-    # n2.children.append([n6])
-
-    # n7 = Node(node_number=7, payoffs=(0,0))
-    # n2.children.append([n7])
-
-    # n8 = Node(node_number=8, payoffs=(0,2))
-    # n3.children.append([n8])
-
-    # n9 = Node(node_number=9, payoffs=(0,0))
-    # n3.children.append([n9])
+# n6 = Node(node_number=6, payoffs=(1,2))
+# n2.children.append([n6])
 
 
-    # n0 = Node(node_number=0, player=0, children=[], actions=('G', 'H'))
+# n0 = Node(node_number=0, player=0, children=[], actions=(0, 1, 2))
 
-    # n1 = Node(node_number=1, player=1, children=[], actions=("C", "D"))
-    # n0.children.append([n1])
+# n1 = Node(node_number=1, player=1, children=[], actions=("A", "R"))
+# n0.children.append([n1])
 
-    # n2 = Node(node_number=2, player=1, children=[], actions=("E", "F"))
-    # n0.children.append([n2])
+# n2 = Node(node_number=2, player=1, children=[], actions=("A", "R"))
+# n0.children.append([n2])
 
-    # n3 = Node(node_number=3, payoffs=(2,2))
-    # n1.children.append([n3])
+# n3 = Node(node_number=3, player=1, children=[], actions=("A", "R"))
+# n0.children.append([n3])
 
-    # n4 = Node(node_number=4, player=0, children=[], actions=("A", "B"))
-    # n1.children.append([n4])
+# n4 = Node(node_number=4, payoffs=(2,0))
+# n1.children.append([n4])
 
-    # n5 = Node(node_number=5, payoffs=(1,1))
-    # n2.children.append([n5])
+# n5 = Node(node_number=5, payoffs=(0,0))
+# n1.children.append([n5])
 
-    # n6 = Node(node_number=6, payoffs=(2,1))
-    # n2.children.append([n6])
+# n6 = Node(node_number=6, payoffs=(1,1))
+# n2.children.append([n6])
 
-    # n7 = Node(node_number=7, payoffs=(3,2))
-    # n4.children.append([n7])
+# n7 = Node(node_number=7, payoffs=(0,0))
+# n2.children.append([n7])
 
-    # n8 = Node(node_number=8, payoffs=(3,3))
-    # n4.children.append([n8])
+# n8 = Node(node_number=8, payoffs=(0,2))
+# n3.children.append([n8])
+
+# n9 = Node(node_number=9, payoffs=(0,0))
+# n3.children.append([n9])
 
 
-    # n0 = Node(node_number=0, player=0, children=[], actions=("U", "D"))
-        
-    # n1 = Node(node_number=1, payoffs=(2,2))
-    # n0.children.append([n1])
+# n0 = Node(node_number=0, player=0, children=[], actions=('G', 'H'))
+
+# n1 = Node(node_number=1, player=1, children=[], actions=("C", "D"))
+# n0.children.append([n1])
+
+# n2 = Node(node_number=2, player=1, children=[], actions=("E", "F"))
+# n0.children.append([n2])
+
+# n3 = Node(node_number=3, payoffs=(2,2))
+# n1.children.append([n3])
+
+# n4 = Node(node_number=4, player=0, children=[], actions=("A", "B"))
+# n1.children.append([n4])
+
+# n5 = Node(node_number=5, payoffs=(1,1))
+# n2.children.append([n5])
+
+# n6 = Node(node_number=6, payoffs=(2,1))
+# n2.children.append([n6])
+
+# n7 = Node(node_number=7, payoffs=(3,2))
+# n4.children.append([n7])
+
+# n8 = Node(node_number=8, payoffs=(3,3))
+# n4.children.append([n8])
+
+
+# n0 = Node(node_number=0, player=0, children=[], actions=("U", "D"))
     
-    # n2 = Node(node_number=2, player=1, children=[], actions=("L", "R"))
-    # n0.children.append([n2])
-    
-    # n3 = Node(node_number=3, payoffs=(3,1))
-    # n2.children.append([n3])
-    
-    # n4 = Node(node_number=4, payoffs=(0,0))
-    # n2.children.append([n4])
+# n1 = Node(node_number=1, payoffs=(2,2))
+# n0.children.append([n1])
+
+# n2 = Node(node_number=2, player=1, children=[], actions=("L", "R"))
+# n0.children.append([n2])
+
+# n3 = Node(node_number=3, payoffs=(3,1))
+# n2.children.append([n3])
+
+# n4 = Node(node_number=4, payoffs=(0,0))
+# n2.children.append([n4])
+
+# pprint.pp(nash_eq(n0))
