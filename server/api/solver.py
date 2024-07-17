@@ -37,7 +37,9 @@ class Node:
         self.payoffs = payoffs
 
 def all_perms(max_ls):
-    if len(max_ls) == 1:
+    if len(max_ls) == 0:
+        return []
+    elif len(max_ls) == 1:
         return list(map(lambda x: [x], list(range(max_ls[0] + 1))))
     prev = all_perms(max_ls[1:])
     cr = []
@@ -158,15 +160,17 @@ def get_strategies(n0, strategy_sets):
         if player in strategy_sets.keys():
             for j in range(len(strategy_sets[player])):
                 k.append([*strategy_sets[player][j], {
-                    "node": n0.node_number,
+                    "num": n0.node_number,
                     "action": n0.actions[i],
-                    "index": i
+                    "index": i,
+                    "player": player
                 }])
         else:
             k.append([{
-                "node": n0.node_number,
+                "num": n0.node_number,
                 "action": n0.actions[i],
-                "index": i
+                "index": i,
+                "player": player
             }])
     strategy_sets[player] = k
 
@@ -191,7 +195,7 @@ def get_matrix(n0):
         node = n0
         while node.payoffs == []:
             for m in range(len(k)):
-                if k[m]["node"] == node.node_number:
+                if k[m]["num"] == node.node_number:
                     node = node.children[k[m]["index"]][0]
                     break
         
@@ -207,7 +211,11 @@ def nash_eq(n0):
     best_responses = []
 
     for l in range(nplayers):
-        indices = all_perms([len(strategy_sets[i]) - 1 for i in range(nplayers) if i != l])
+
+        if nplayers > 1:
+            indices = all_perms([len(strategy_sets[i]) - 1 for i in range(nplayers) if i != l])
+        else:
+            indices = [[]]
 
         # set up indices to hold all other players' strategies constant
         for j in range(len(indices)):
@@ -235,7 +243,7 @@ def nash_eq(n0):
 
 ################################# Main #################################
 
-def main(n0):
+def main_spne(n0):
     n, arr = spne([], n0)
     payoffs = []
     s = []
@@ -259,6 +267,15 @@ def main(n0):
         "payoffs": payoffs,
         "profile": s
     }
+
+def main_nash(n0):
+    final_response = nash_eq(n0)
+    ret = {"payoffs": [], "profile": []}
+    for i in range(len(final_response)):
+        ret["profile"].append(final_response[i]["strategy_profile"])
+        ret["payoffs"].append(final_response[i]["payoff"])
+
+    return ret
 
 
 ################################# trial runs #################################

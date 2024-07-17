@@ -17,7 +17,11 @@
     let nSolns = 0;
     let selected = 0;
 
-    let loading = false;
+    let loading_spne = false;
+    let loading_nash = false;
+
+    let data_spne = false;
+    let data_nash = false;
 
     class Node {
         public node_number: number
@@ -44,9 +48,12 @@
     const node = new Node($global_node_num)
     global_node_num.update(n => n+1)
 
-    const solve = () => {
-        loading = true
-        fetch(`${PUBLIC_SERVER_URL}/solve`, {
+    const solve = (type: string) => {
+        let FETCH_URL: string;
+        if (type == "spne") { loading_spne = true; FETCH_URL = `${PUBLIC_SERVER_URL}/spne` }
+        else { loading_nash = true; FETCH_URL = `${PUBLIC_SERVER_URL}/nash` }
+
+        fetch(FETCH_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(node)
@@ -55,7 +62,9 @@
                 payoffs = data.payoffs
                 profile.update(n => data.profile)
                 nSolns = data.profile.length
-                loading = false
+
+                if (type == "spne") { loading_spne = false; data_spne = true; data_nash = false }
+                else { loading_nash = false; data_nash = true; data_spne = false }
             })
         })
     }
@@ -86,7 +95,10 @@
                 <button class="soln_index" class:selected={selected==i} on:click={() => select(i)}></button>
             {/each}
         </div>
-        <button on:click={solve} class:loading={loading} disabled={loading}>{loading ? "Loading" : "SPNE"}</button>
+        <div class="buttons">
+            <button on:click={() => solve("nash")} class:loading={loading_nash} class:selected={data_nash} disabled={loading_nash}>{loading_nash ? "Loading" : "Nash"}</button>
+            <button on:click={() => solve("spne")} class:loading={loading_spne} class:selected={data_spne} disabled={loading_spne}>{loading_spne ? "Loading" : "SPNE"}</button>
+        </div>
     </div>
 </div>
 
@@ -172,5 +184,10 @@
 
     .loading:hover {
         cursor: not-allowed;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 1vw;
     }
 </style>
