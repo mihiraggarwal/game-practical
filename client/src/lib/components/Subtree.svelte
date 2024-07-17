@@ -57,6 +57,7 @@
 
     $: if (choice == 0) {
         node.player = parseInt(playerNum);
+        node.payoffs = [];
     } else if (choice == 1) {
         node.payoffs = payoffval.split(",").map((x) => parseInt(x))
     }
