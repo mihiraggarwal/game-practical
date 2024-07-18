@@ -26,6 +26,7 @@ class Node:
             children: list[list["Node"]] = [], # interpret as all possible children
             actions: tuple[str] = [],
             action: list[str] = None,
+            imperfect_to: list["Node"] = [],
             payoffs: list[int] = []
         ):
         
@@ -34,6 +35,7 @@ class Node:
         self.children = children
         self.actions = actions
         self.action = action
+        self.imperfect_to = imperfect_to
         self.payoffs = payoffs
 
 def all_perms(max_ls):
@@ -130,6 +132,8 @@ def spne(arr: list, node: "Node"):
 
 ################################# Nash Equilibrium #################################
 
+removed = []
+
 def get_strategies(n0, strategy_sets):
     # identify all information sets first
     # then define a strategy as an action for each information set - find all strategies
@@ -140,8 +144,17 @@ def get_strategies(n0, strategy_sets):
 
     # induction hypothesis
     interm = {}
+
     for i in range(len(n0.children)):
+
+        if n0.children[i][0] in removed:
+            continue
+
+        for j in range(len(n0.children[i][0].imperfect_to)):
+            removed.append(n0.children[i][0].imperfect_to[j])
+
         strategy_sets = get_strategies(n0.children[i][0], strategy_sets)
+
         for j in strategy_sets.keys():
             m = []
             for k in range(len(strategy_sets[j])):
@@ -160,14 +173,14 @@ def get_strategies(n0, strategy_sets):
         if player in strategy_sets.keys():
             for j in range(len(strategy_sets[player])):
                 k.append([*strategy_sets[player][j], {
-                    "num": n0.node_number,
+                    "num": [n0.node_number, *[n.node_number for n in n0.imperfect_to]],
                     "action": n0.actions[i],
                     "index": i,
                     "player": player
                 }])
         else:
             k.append([{
-                "num": n0.node_number,
+                "num": [n0.node_number, *[n.node_number for n in n0.imperfect_to]],
                 "action": n0.actions[i],
                 "index": i,
                 "player": player
@@ -195,7 +208,7 @@ def get_matrix(n0):
         node = n0
         while node.payoffs == []:
             for m in range(len(k)):
-                if k[m]["num"] == node.node_number:
+                if node.node_number in k[m]["num"]:
                     node = node.children[k[m]["index"]][0]
                     break
         
@@ -329,6 +342,54 @@ def main_nash(n0):
 
 # n9 = Node(node_number=9, payoffs=(0,0))
 # n3.children.append([n9])
+
+
+# n0 = Node(node_number=0, player=0, children=[], actions=("A", "B"))
+
+# n1 = Node(node_number=1, player=1, children=[], actions=("C", "D"))
+# n0.children.append([n1])
+
+# n2 = Node(node_number=2, player=1, children=[], actions=("E", "F"))
+# n0.children.append([n2])
+
+# n3 = Node(node_number=3, player=0, children=[], actions=("G", "H"))
+# n1.children.append([n3])
+
+# n4 = Node(node_number=4, player=0, children=[], actions=("I", "J"))
+# n1.children.append([n4])
+
+# n5 = Node(node_number=5, player=0, children=[], actions=("K", "L"))
+# n2.children.append([n5])
+
+# n6 = Node(node_number=6, player=0, children=[], actions=("M", "N"))
+# n2.children.append([n6])
+
+# n3.imperfect_to = [n6]
+# n4.imperfect_to = [n5]
+
+# n7 = Node(node_number=7, payoffs=(2,0))
+# n3.children.append([n7])
+
+# n8 = Node(node_number=8, payoffs=(0,0))
+# n3.children.append([n8])
+
+# n9 = Node(node_number=9, payoffs=(1,1))
+# n4.children.append([n9])
+
+# n10 = Node(node_number=10, payoffs=(0,0))
+# n4.children.append([n10])
+
+# n11 = Node(node_number=11, payoffs=(0,2))
+# n5.children.append([n11])
+
+# n12 = Node(node_number=12, payoffs=(0,0))
+# n5.children.append([n12])
+
+# n13 = Node(node_number=13, payoffs=(0,0))
+# n6.children.append([n13])
+
+# n14 = Node(node_number=14, payoffs=(0,0))
+# n6.children.append([n14])
 
 
 # n0 = Node(node_number=0, player=0, children=[], actions=('G', 'H'))
