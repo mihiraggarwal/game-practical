@@ -4,7 +4,7 @@
 
     import { onMount, afterUpdate } from 'svelte';
 
-    import { global_node_num, profile, profile_index } from "$lib/stores"
+    import { global_node_num, profile, profile_index, current_imperfection } from "$lib/stores"
 
     export let node;
     export let Node_class;
@@ -14,6 +14,8 @@
     export let initial = false;
 
     export let colour = false;
+    
+    let imperfect = false;
 
     let node_wid: number;
     let doc_wid: number;
@@ -25,6 +27,8 @@
 
     let child_colour_num: number;
     let line_colour: boolean = colour;
+
+    $: if ($current_imperfection.length == 0) imperfect = false
 
     $: pr = $profile
     $: for (let p of pr[$profile_index].flat(2)) {
@@ -115,7 +119,7 @@
 
     <div class="inner_initial">
         <div class="main_node">
-        <PlusBtn bind:choice={choice} bind:playerNum={playerNum} bind:payoffval={payoffval} node_num={node.node_number} initial={initial} colour={colour} />
+        <PlusBtn bind:choice={choice} bind:playerNum={playerNum} bind:payoffval={payoffval} node_num={node.node_number} initial={initial} colour={colour} bind:imperfect={imperfect} node={node} />
         {#if (choice == 0)}
             <div class="action_div">
                 <ActionBtn bind:children={children} node_num={node.node_number} initial={initial} colour={colour} />

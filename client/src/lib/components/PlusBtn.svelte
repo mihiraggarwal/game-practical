@@ -1,5 +1,7 @@
 <script lang="ts">
 
+    import { any_imperfect, current_imperfection } from "$lib/stores";
+
     export let choice;
 
     export let playerNum;
@@ -8,11 +10,21 @@
     export let node_num
     export let initial = false;
 
+    export let node;
+
     export let colour: boolean = false;
+    export let imperfect: boolean = false;
 
     let dialog: HTMLDialogElement;
 
     let selected: number;
+
+    $: for (let n in $current_imperfection) {
+        if ($current_imperfection[n].node_number == node.node_number) {
+            imperfect = true
+            break
+        }
+    }
 
     const btnClick = () => {
         dialog = document.getElementById(`dlg-${node_num}`) as HTMLDialogElement;
@@ -79,10 +91,24 @@
         payoffval = (document.getElementById(`payoff_input_${node_num}`) as HTMLInputElement).value
         enter(`(${payoffval})`)
     }
+
+    const getImperfections = (event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement; }) => {
+        event.preventDefault()
+        imperfect = !imperfect
+
+        if (imperfect) {
+            current_imperfection.update(x => [...x, node])
+            any_imperfect.update(i => true)
+        }
+        else {
+            current_imperfection.update(x => x.filter(x => x != node))
+            if ($current_imperfection.length == 0) any_imperfect.update(i => false)
+        }     
+    }
 </script>
 
 <div class="main">
-    <button class="plus-btn" class:colour={initial || colour} id="plus-btn-node-{node_num}" on:click={btnClick}>
+    <button class="plus-btn" class:colour={initial || colour} class:imperfect={imperfect} id="plus-btn-node-{node_num}" on:click={btnClick} on:contextmenu={(event) => getImperfections(event)} >
         <i class="fa fa-plus plus {node_num}" class:colour={colour} id="plus-node-{node_num}"></i>
     </button>
 </div>
@@ -116,6 +142,10 @@
         justify-content: center;
         align-items: center;
         background-color: #fff;
+    }
+
+    .imperfect {
+        background-color: rgb(132, 176, 247);
     }
 
     .plus-btn:hover {
