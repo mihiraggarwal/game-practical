@@ -85,29 +85,92 @@ def subnash(node: "Node"):
             max_payoff = sub_node.payoffs
             max_payoffs.append(max_payoff)
             players.append(node.player)
-            node_numbers.append(node.node_number)
+            node_numbers.append([node.node_number, *node.imperfect_to])
     
             internal_sub.append(sub_node)
 
         # this yields all spne of that perm
         yield actions, max_payoffs, players, node_numbers, internal_sub, perms[p]
 
+def valid_subgame(node: "Node"):
+    if len(node.imperfect_to) != 0:
+        return False
+    
+    all_imperfects = []
+    all_nodes = []
+
+    def get_nodes(node: "Node"):
+
+        all_nodes.append(node)
+        all_imperfects.extend(node.imperfect_to)
+
+        for i in range(len(node.children)):
+            get_nodes(node.children[i][0])
+    
+    get_nodes(node)
+    
+    for i in range(len(all_imperfects)):
+        if all_imperfects[i] not in all_nodes:
+            return False
+    
+    return True
+
 def spne(arr: list, node: "Node"):
     children = node.children
     main_arr = []
+    flag = True
+
     for i in range(len(children)):
         if children[i][0].payoffs == []:
-            ret, ret_arr = spne(arr, children[i][0]) # recursively make all pre-terminal nodes
-            children[i] = ret # automatically propagates to node.children
+            if valid_subgame(children[i][0]):
+                ret, ret_arr = spne(arr, children[i][0]) # recursively make all pre-terminal nodes
+                children[i] = ret # automatically propagates to node.children
+            else:
+                flag = False
         else:
             ret_arr = [[{
                 "payoff": children[i][0].payoffs,
-                "num": children[i][0].node_number
+                "num": [children[i][0].node_number]
             }]] # to get the lengths of node.children and main_arr same
-        main_arr.append(ret_arr)
+        
+        if flag:
+            main_arr.append(ret_arr)
 
     sub_nodes: list["Node"] = []
     final_arr = []
+
+    # node doesn't start a subgame - thus, return
+    if not valid_subgame(node):
+        return node, main_arr
+
+    # there exists a child which isn't a perfect subgame - thus, nash
+    if not flag:
+        out = []
+        out_arr = []
+
+        for nash in nash_eq(node):
+            
+            inn = []
+            inn_arr = []
+
+            for j in range(len(nash)):
+                inn.append(nash[j]["payoff_node"])
+                inner_arr = []
+                for k in range(len(nash[j]["strategy_profile"])):
+                    inner_arr.append({
+                        "action": nash[j]["strategy_profile"][k]["action"],
+                        "payoff": nash[j]["payoff"],
+                        "player": nash[j]["strategy_profile"][k]["player"],
+                        "num": nash[j]["strategy_profile"][k]["num"],
+                    })
+                inn_arr.append(inner_arr)
+
+            out.append(inn)
+            out_arr.append(inn_arr)
+        
+        return out, out_arr
+
+    # all children are perfect subgames - thus, spne
     for actions, payoffs, players, nums, n, perm in subnash(node):
         sub_nodes.extend(n)
 
@@ -123,7 +186,6 @@ def spne(arr: list, node: "Node"):
                 "payoff": payoffs[i],
                 "player": players[i],
                 "num": nums[i],
-                "destination": n[i].node_number
             }])
 
         final_arr.extend(another_arr)
@@ -134,10 +196,7 @@ def spne(arr: list, node: "Node"):
 
 removed = []
 
-def get_strategies(n0, strategy_sets):
-    # identify all information sets first
-    # then define a strategy as an action for each information set - find all strategies
-    
+def get_strategies(n0, strategy_sets, perms_p):
     # base case
     if n0.payoffs != []:
         return {}
@@ -147,13 +206,14 @@ def get_strategies(n0, strategy_sets):
 
     for i in range(len(n0.children)):
 
-        if n0.children[i][0] in removed:
+        if n0.children[i][perms_p[i]] in removed:
             continue
 
-        for j in range(len(n0.children[i][0].imperfect_to)):
-            removed.append(n0.children[i][0].imperfect_to[j])
+        for j in range(len(n0.children[i][perms_p[i]].imperfect_to)):
+            removed.append(n0.children[i][perms_p[i]].imperfect_to[j])
 
-        strategy_sets = get_strategies(n0.children[i][0], strategy_sets)
+        # passing perms_p here may be wrong
+        strategy_sets = get_strategies(n0.children[i][perms_p[i]], strategy_sets, perms_p)
 
         for j in strategy_sets.keys():
             m = []
@@ -189,8 +249,8 @@ def get_strategies(n0, strategy_sets):
 
     return strategy_sets
 
-def get_matrix(n0):
-    strategy_sets = get_strategies(n0, {})
+def get_matrix(n0, perms_p):
+    strategy_sets = get_strategies(n0, {}, perms_p)
     
     nplayers = max(strategy_sets.keys()) + 1
     indices = all_perms([len(strategy_sets[i]) - 1 for i in range(nplayers)])
@@ -209,50 +269,60 @@ def get_matrix(n0):
         while node.payoffs == []:
             for m in range(len(k)):
                 if node.node_number in k[m]["num"]:
-                    node = node.children[k[m]["index"]][0]
+                    node = node.children[k[m]["index"]][perms_p[k[m]["index"]]]
                     break
         
         arr[*indices[i]] = {
             "strategy_profile": k,
-            "payoff": node.payoffs
+            "payoff": node.payoffs,
+            "payoff_node": node
         }
 
     return arr, nplayers, strategy_sets
 
 def nash_eq(n0):
-    arr, nplayers, strategy_sets = get_matrix(n0)
-    best_responses = []
 
-    for l in range(nplayers):
+    # when called from the spne function, it must also take into account multiple possible children
+    # hence, the perms are passed to the get_matrix function
+    ch = n0.children
+    maxp = [len(i)-1 for i in ch]
+    perms = all_perms(maxp)
 
-        if nplayers > 1:
-            indices = all_perms([len(strategy_sets[i]) - 1 for i in range(nplayers) if i != l])
-        else:
-            indices = [[]]
+    for p in range(len(perms)):
 
-        # set up indices to hold all other players' strategies constant
-        for j in range(len(indices)):
-            indices[j].insert(l, slice(None))
+        arr, nplayers, strategy_sets = get_matrix(n0, perms[p])
+        best_responses = []
 
-            max_payoff_arr = [{"payoff": [float("-inf") for _ in range(nplayers)]}]
+        for l in range(nplayers):
 
-            for k in range(len(arr[*indices[j]])):
-                sub_dict = arr[*indices[j]][k]
-                if sub_dict["payoff"][l] > max_payoff_arr[0]["payoff"][l]:
-                    max_payoff_arr = [sub_dict]
-                elif sub_dict["payoff"][l] == max_payoff_arr[0]["payoff"][l]:
-                    max_payoff_arr.append(sub_dict)
+            if nplayers > 1:
+                indices = all_perms([len(strategy_sets[i]) - 1 for i in range(nplayers) if i != l])
+            else:
+                indices = [[]]
 
-            best_responses.extend(max_payoff_arr)
+            # set up indices to hold all other players' strategies constant
+            for j in range(len(indices)):
+                indices[j].insert(l, slice(None))
 
-    final_responses = []
+                max_payoff_arr = [{"payoff": [float("-inf") for _ in range(nplayers)]}]
 
-    # see if a strategy profile is a best response as many times as there are players
-    for i in range(len(best_responses)):
-        if best_responses.count(best_responses[i]) >= nplayers and best_responses[i] not in final_responses:
-            final_responses.append(best_responses[i])
-    
-    return final_responses
+                for k in range(len(arr[*indices[j]])):
+                    sub_dict = arr[*indices[j]][k]
+                    if sub_dict["payoff"][l] > max_payoff_arr[0]["payoff"][l]:
+                        max_payoff_arr = [sub_dict]
+                    elif sub_dict["payoff"][l] == max_payoff_arr[0]["payoff"][l]:
+                        max_payoff_arr.append(sub_dict)
+
+                best_responses.extend(max_payoff_arr)
+
+        final_responses = []
+
+        # see if a strategy profile is a best response as many times as there are players
+        for i in range(len(best_responses)):
+            if best_responses.count(best_responses[i]) >= nplayers and best_responses[i] not in final_responses:
+                final_responses.append(best_responses[i])
+        
+        yield final_responses
 
 ################################# Main #################################
 
@@ -282,7 +352,9 @@ def main_spne(n0):
     }
 
 def main_nash(n0):
-    final_response = nash_eq(n0)
+    final_response = []
+    for i in nash_eq(n0):
+        final_response.extend(i)
     ret = {"payoffs": [], "profile": []}
     for i in range(len(final_response)):
         ret["profile"].append(final_response[i]["strategy_profile"])
@@ -325,6 +397,10 @@ def main_nash(n0):
 # n3 = Node(node_number=3, player=1, children=[], actions=("A", "R"))
 # n0.children.append([n3])
 
+# n1.imperfect_to = [n2, n3]
+# n2.imperfect_to = [n1, n3]
+# n3.imperfect_to = [n1, n2]
+
 # n4 = Node(node_number=4, payoffs=(2,0))
 # n1.children.append([n4])
 
@@ -366,6 +442,8 @@ def main_nash(n0):
 
 # n3.imperfect_to = [n6]
 # n4.imperfect_to = [n5]
+# n6.imperfect_to = [n3]
+# n5.imperfect_to = [n4]
 
 # n7 = Node(node_number=7, payoffs=(2,0))
 # n3.children.append([n7])
