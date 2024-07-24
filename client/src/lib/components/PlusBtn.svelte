@@ -24,6 +24,9 @@
             imperfect = true
             break
         }
+        else {
+            imperfect = false
+        }
     }
 
     const btnClick = () => {
@@ -109,7 +112,7 @@
 
 <div class="main">
     <button class="plus-btn" class:colour={initial || colour} class:imperfect={imperfect} id="plus-btn-node-{node_num}" on:click={btnClick} on:contextmenu={(event) => getImperfections(event)} >
-        <i class="fa fa-plus plus {node_num}" class:colour={colour} id="plus-node-{node_num}"></i>
+        <i class="fa fa-plus plus {node_num}" id="plus-node-{node_num}"></i>
     </button>
 </div>
 
@@ -142,6 +145,11 @@
         justify-content: center;
         align-items: center;
         background-color: #fff;
+    }
+
+    .colour {
+        border: 5px solid;
+        background-color: #16e16e;
     }
 
     .imperfect {
@@ -210,10 +218,5 @@
 
     #enterBtn {
         width: auto;
-    }
-
-    .colour {
-        border: 5px solid;
-        background-color: #16e16e;
     }
 </style>

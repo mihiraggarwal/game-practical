@@ -26,7 +26,7 @@ class Node:
             children: list[list["Node"]] = [], # interpret as all possible children
             actions: tuple[str] = [],
             action: list[str] = None,
-            imperfect_to: list["Node"] = [],
+            imperfect_to: list[int] = [],
             payoffs: list[int] = []
         ):
         
@@ -101,7 +101,7 @@ def valid_subgame(node: "Node"):
 
     def get_nodes(node: "Node"):
 
-        all_nodes.append(node)
+        all_nodes.append(node.node_number)
         all_imperfects.extend(node.imperfect_to)
 
         for i in range(len(node.children)):
@@ -155,15 +155,15 @@ def spne(arr: list, node: "Node"):
 
             for j in range(len(nash)):
                 inn.append(nash[j]["payoff_node"])
-                inner_arr = []
+                # inner_arr = []
                 for k in range(len(nash[j]["strategy_profile"])):
-                    inner_arr.append({
+                    inn_arr.append({
                         "action": nash[j]["strategy_profile"][k]["action"],
                         "payoff": nash[j]["payoff"],
                         "player": nash[j]["strategy_profile"][k]["player"],
                         "num": nash[j]["strategy_profile"][k]["num"],
                     })
-                inn_arr.append(inner_arr)
+                # inn_arr.extend(inner_arr)
 
             out.append(inn)
             out_arr.append(inn_arr)
@@ -206,7 +206,7 @@ def get_strategies(n0, strategy_sets, perms_p):
 
     for i in range(len(n0.children)):
 
-        if n0.children[i][perms_p[i]] in removed:
+        if n0.children[i][perms_p[i]].node_number in removed:
             continue
 
         for j in range(len(n0.children[i][perms_p[i]].imperfect_to)):
@@ -233,14 +233,14 @@ def get_strategies(n0, strategy_sets, perms_p):
         if player in strategy_sets.keys():
             for j in range(len(strategy_sets[player])):
                 k.append([*strategy_sets[player][j], {
-                    "num": [n0.node_number, *[n.node_number for n in n0.imperfect_to]],
+                    "num": [n0.node_number, *n0.imperfect_to],
                     "action": n0.actions[i],
                     "index": i,
                     "player": player
                 }])
         else:
             k.append([{
-                "num": [n0.node_number, *[n.node_number for n in n0.imperfect_to]],
+                "num": [n0.node_number, *n0.imperfect_to],
                 "action": n0.actions[i],
                 "index": i,
                 "player": player
@@ -330,7 +330,6 @@ def main_spne(n0):
     n, arr = spne([], n0)
     payoffs = []
     s = []
-
     for k in range(len(arr)):
         nplayers = 0
         for i in range(len(arr[k])-1, -1, -1):
@@ -397,9 +396,9 @@ def main_nash(n0):
 # n3 = Node(node_number=3, player=1, children=[], actions=("A", "R"))
 # n0.children.append([n3])
 
-# n1.imperfect_to = [n2, n3]
-# n2.imperfect_to = [n1, n3]
-# n3.imperfect_to = [n1, n2]
+# n1.imperfect_to = [2, 3]
+# n2.imperfect_to = [1, 3]
+# n3.imperfect_to = [1, 2]
 
 # n4 = Node(node_number=4, payoffs=(2,0))
 # n1.children.append([n4])
@@ -440,10 +439,10 @@ def main_nash(n0):
 # n6 = Node(node_number=6, player=0, children=[], actions=("M", "N"))
 # n2.children.append([n6])
 
-# n3.imperfect_to = [n6]
-# n4.imperfect_to = [n5]
-# n6.imperfect_to = [n3]
-# n5.imperfect_to = [n4]
+# n3.imperfect_to = [6]
+# n4.imperfect_to = [5]
+# n6.imperfect_to = [3]
+# n5.imperfect_to = [4]
 
 # n7 = Node(node_number=7, payoffs=(2,0))
 # n3.children.append([n7])

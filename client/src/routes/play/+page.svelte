@@ -21,7 +21,7 @@
         public player: number
         public children: Array<Node>
         public actions: Array<string>
-        public imperfect_to: Array<Node>
+        public imperfect_to: Array<Node|number>
         public payoffs: Array<number>
 
         constructor(
@@ -29,7 +29,7 @@
             player: number = 0,
             children: Array<Node> = [],
             actions: Array<string> = [],
-            imperfect_to: Array<Node> = [],
+            imperfect_to: Array<Node|number> = [],
             payoffs: Array<number> = [],
         ) {
             this.node_number = node_number;
@@ -49,10 +49,24 @@
         if (type == "spne") { loading_spne = true; FETCH_URL = `${PUBLIC_SERVER_URL}/spne` }
         else { loading_nash = true; FETCH_URL = `${PUBLIC_SERVER_URL}/nash` }
 
+        let n = node;
+
+        const imperfect_node_num = (n: Node) => {
+            n.imperfect_to = n.imperfect_to.map(x => {
+                if (typeof x == "number") return x
+                else return x.node_number
+            })
+
+            n.children.forEach(child => imperfect_node_num(child))
+            return n
+        }
+
+        n = imperfect_node_num(n)
+
         fetch(FETCH_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(node)
+            body: JSON.stringify(n)
         }).then(resp => {
             resp.json().then(data => {
                 payoffs = data.payoffs
@@ -97,9 +111,7 @@
 <div class="container">
     <div class="top">
         <h1>game-practical</h1>
-        {#if (payoffs)}
-            <div class="payoff">Payoff: ({payoffs[$profile_index]})</div>
-        {:else if ($all_imperfections.length > 0)}
+        {#if ($all_imperfections.length > 0)}
             <div class="info_sets">
                 <div class="payoff">Imperfect Info Sets:</div>
                 {#each $all_imperfections as imperfection, i}
@@ -116,15 +128,19 @@
     </div>
 
     <div class="answer-container">
+        {#if ($any_imperfect)}
+            <button on:click={saveImperfections}>Add Imperfect Info Set</button>
+        {/if}
+        
+        {#if (payoffs)}
+            <div class="payoff">Payoff: ({payoffs[$profile_index]})</div>
+        {/if}
+
         <div class="index_container">
             {#each Array.from({ length: nSolns }) as _, i}
                 <button class="soln_index" class:selected={selected==i} on:click={() => select(i)}></button>
             {/each}
         </div>
-
-        {#if ($any_imperfect)}
-            <button on:click={saveImperfections}>Add Imperfect Info Set</button>
-        {/if}
 
         <div class="buttons">
             <button on:click={() => solve("nash")} class:loading={loading_nash} class:selected={data_nash} disabled={loading_nash}>{loading_nash ? "Loading" : "Nash"}</button>

@@ -23,14 +23,15 @@ def nash():
     return main_nash(node)
 
 def convert_to_class(node):
-    node = Node(
+    n0 = Node(
         node_number=node["node_number"],
         player=node["player"] - 1,
         children=list(map(lambda x: [x], node["children"])),
         actions=node["actions"],
+        imperfect_to=node["imperfect_to"],
         payoffs=node["payoffs"]
     )
-    for i in range(len(node.children)):
-        n = convert_to_class(node.children[i][0])
-        node.children[i][0] = n
-    return node
+    for i in range(len(n0.children)):
+        n = convert_to_class(n0.children[i][0])
+        n0.children[i][0] = n
+    return n0

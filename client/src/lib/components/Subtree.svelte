@@ -32,7 +32,7 @@
 
     $: pr = $profile
     $: for (let p of pr[$profile_index].flat(2)) {
-        if (p.num == node_num) {
+        if (p.num.includes(node_num)) {
             line_colour = true;
             for (let a = 0; a < node.actions.length; a++) {
                 if (node.actions[a] == p.action) {

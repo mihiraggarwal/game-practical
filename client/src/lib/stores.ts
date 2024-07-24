@@ -2,11 +2,11 @@ import { writable } from "svelte/store";
 
 export const global_node_num = writable(0);
 
-export const profile = writable<Array<Array<Array<{action: string, payoff: number[], player: number, num: number, destination: number}>>>>([[[{
+export const profile = writable<Array<Array<Array<{action: string, payoff: number[], player: number, num: number[], destination: number}>>>>([[[{
     action: "",
     payoff: [],
     player: -1,
-    num: -1,
+    num: [-1],
     destination: -1
 }]]]);
 
@@ -17,7 +17,7 @@ class Node {
     public player: number
     public children: Array<Node>
     public actions: Array<string>
-    public imperfect_to: Array<Node>
+    public imperfect_to: Array<Node|number>
     public payoffs: Array<number>
 
     constructor(
@@ -25,7 +25,7 @@ class Node {
         player: number = 0,
         children: Array<Node> = [],
         actions: Array<string> = [],
-        imperfect_to: Array<Node> = [],
+        imperfect_to: Array<Node|number> = [],
         payoffs: Array<number> = [],
     ) {
         this.node_number = node_number;
