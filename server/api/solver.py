@@ -118,57 +118,70 @@ def valid_subgame(node: "Node"):
 def spne(arr: list, node: "Node"):
     children = node.children
     main_arr = []
-    flag = True
 
     for i in range(len(children)):
         if children[i][0].payoffs == []:
-            if valid_subgame(children[i][0]):
-                ret, ret_arr = spne(arr, children[i][0]) # recursively make all pre-terminal nodes
-                children[i] = ret # automatically propagates to node.children
-            else:
-                flag = False
+            ret, ret_arr = spne(arr, children[i][0]) # recursively make all pre-terminal nodes
+            children[i] = ret # automatically propagates to node.children
         else:
             ret_arr = [[{
                 "payoff": children[i][0].payoffs,
                 "num": [children[i][0].node_number]
             }]] # to get the lengths of node.children and main_arr same
         
-        if flag:
-            main_arr.append(ret_arr)
+        main_arr.append(ret_arr)
 
     sub_nodes: list["Node"] = []
     final_arr = []
 
     # node doesn't start a subgame - thus, return
     if not valid_subgame(node):
-        return node, main_arr
+        perms = all_perms([len(main_arr[i])-1 for i in range(len(main_arr))])
+        for perm in perms:
+            sub_arr = []
+
+            for i in range(len(perm)):
+                sub_arr.extend(main_arr[i][perm[i]])
+
+            another_arr = []
+            another_arr.append([*sub_arr])
+
+            final_arr.extend(another_arr)
+        
+        return [node], final_arr
+
+    # chck if all children are perfect subgames
+    flag = True
+    for i in range(len(children)):
+        if children[i][0].payoffs == []:
+            if not valid_subgame(children[i][0]):
+                flag = False
+                break
 
     # there exists a child which isn't a perfect subgame - thus, nash
     if not flag:
-        out = []
-        out_arr = []
-
-        for nash in nash_eq(node):
-            
-            inn = []
-            inn_arr = []
-
+        for perm, nash in nash_eq(node):
             for j in range(len(nash)):
-                inn.append(nash[j]["payoff_node"])
-                # inner_arr = []
-                for k in range(len(nash[j]["strategy_profile"])):
-                    inn_arr.append({
-                        "action": nash[j]["strategy_profile"][k]["action"],
-                        "payoff": nash[j]["payoff"],
-                        "player": nash[j]["strategy_profile"][k]["player"],
-                        "num": nash[j]["strategy_profile"][k]["num"],
-                    })
-                # inn_arr.extend(inner_arr)
+                sub_nodes.append(nash[j]["payoff_node"])
+            
+            sub_arr = []
+            for i in range(len(perm)):
+                sub_arr.extend(main_arr[i][perm[i]])
 
-            out.append(inn)
-            out_arr.append(inn_arr)
+            another_arr = []
+            for i in range(len(nash)):
+                inner_arr = []
+                for k in range(len(nash[i]["strategy_profile"])):
+                    inner_arr.append({
+                        "action": nash[i]["strategy_profile"][k]["action"],
+                        "payoff": nash[i]["payoff"],
+                        "player": nash[i]["strategy_profile"][k]["player"],
+                        "num": nash[i]["strategy_profile"][k]["num"],
+                    })
+                another_arr.append([*sub_arr, *inner_arr])
+            final_arr.extend(another_arr)
         
-        return out, out_arr
+        return sub_nodes, final_arr
 
     # all children are perfect subgames - thus, spne
     for actions, payoffs, players, nums, n, perm in subnash(node):
@@ -196,24 +209,20 @@ def spne(arr: list, node: "Node"):
 
 removed = []
 
-def get_strategies(n0, strategy_sets, perms_p):
+def get_strategies(n0, strategy_sets):
     # base case
     if n0.payoffs != []:
         return {}
 
     # induction hypothesis
     interm = {}
-
     for i in range(len(n0.children)):
 
-        if n0.children[i][perms_p[i]].node_number in removed:
-            continue
+        if n0.children[i][0].node_number not in removed:
+            for j in range(len(n0.children[i][0].imperfect_to)):
+                removed.append(n0.children[i][0].imperfect_to[j])
 
-        for j in range(len(n0.children[i][perms_p[i]].imperfect_to)):
-            removed.append(n0.children[i][perms_p[i]].imperfect_to[j])
-
-        # passing perms_p here may be wrong
-        strategy_sets = get_strategies(n0.children[i][perms_p[i]], strategy_sets, perms_p)
+        strategy_sets = get_strategies(n0.children[i][0], strategy_sets)
 
         for j in strategy_sets.keys():
             m = []
@@ -226,6 +235,9 @@ def get_strategies(n0, strategy_sets, perms_p):
             interm[j] = m
 
     # induction step
+    if n0.node_number in removed:
+        return interm
+    
     strategy_sets = interm
     k = []
     player = n0.player
@@ -249,48 +261,160 @@ def get_strategies(n0, strategy_sets, perms_p):
 
     return strategy_sets
 
-def get_matrix(n0, perms_p):
-    strategy_sets = get_strategies(n0, {}, perms_p)
-    
+def get_matrix(n0):
+    strategy_sets = get_strategies(n0, {})
+
     nplayers = max(strategy_sets.keys()) + 1
     indices = all_perms([len(strategy_sets[i]) - 1 for i in range(nplayers)])
 
+    # will contain all possible matrices
+    big_arr = []
+
+    # contains the max index of each perm.
+    # ex: if the root's child's 1st child has 2 perms, the root's child's 1st index will be 1
+    # format: {node_number: [(action index, max_index)]}
+    children_n_map = {}
+    def get_children_n(node):
+        if node.payoffs == []:
+            for m in range(len(node.children)):
+                if node.children[m][0].payoffs != []:
+                    if children_n_map.get(node.node_number) is None:
+                        children_n_map[node.node_number] = [(m, len(node.children[m]) - 1)]
+                    else:
+                        children_n_map[node.node_number].append((m, len(node.children[m]) - 1))
+                get_children_n(node.children[m][0])
+    
+    get_children_n(n0)
+
+    # will contain the possible perms for each pre terminal node
+    ret_perms = [{k: [(v[w][0], None) for w in range(len(v))] for k, v in children_n_map.items()}]
+
+    ch = n0.children
+
+    # gets the possible perms of all the children of the node
+    def find_total(node):
+        if node.payoffs != []:
+            return []
+        total = []
+        for i in range(len(node.children)):
+            if node.children[i][0].payoffs != []:
+                total.append(len(node.children[i]) - 1)
+            else:
+                total.extend(find_total(node.children[i][0]))
+        return total
+
+    # index all perms using just the root node's direct children
+    final_perms = {}
+    for i in range(len(ch)):
+        subnode = ch[i][0]
+        final_perms[subnode.node_number] = all_perms(find_total(subnode))
+    
+    for k, v in children_n_map.items():
+        each_list = list(map(lambda x: x[1], v))
+        each_perms = all_perms(each_list)
+
+        # get a copy of the current ret_perms
+        # defined like this to avoid making a reference to ret_perms
+        current_perms = [{k: v.copy() for k, v in ret_perms[o].items()} for o in range(len(ret_perms))]
+        ret_perms = []
+        for i in range(len(each_perms)):
+
+            # get a copy of the current current_perms
+            # needed to do this since ret_perms are updated every inner iteration but
+            # we need the old ret_perms for all inner iterations, hence current_perms
+            inside_perm = [{k: v.copy() for k, v in current_perms[o].items()} for o in range(len(current_perms))]
+
+            for j in range(len(inside_perm)):
+                inside_perm[j][k] = [(v[w][0], b) for w, b in zip(range(len(v)), each_perms[i])]
+            ret_perms.extend(inside_perm)
+
     import numpy as np
-    arr = np.ndarray(tuple([len(strategy_sets[i]) for i in range(nplayers)]), np.ndarray)
 
-    for i in range(len(indices)):
-        # get strategy profile
-        k = []
-        for j in range(len(indices[i])):
-            k.extend(strategy_sets[j][indices[i][j]])
+    # populating big_arr
+    for r in range(len(ret_perms)):
+        big_arr.append([])
+        sub_arr = np.ndarray(tuple([len(strategy_sets[i]) for i in range(nplayers)]), np.ndarray)
 
-        # get payoffs
-        node = n0
-        while node.payoffs == []:
-            for m in range(len(k)):
-                if node.node_number in k[m]["num"]:
-                    node = node.children[k[m]["index"]][perms_p[k[m]["index"]]]
-                    break
+        for i in range(len(indices)):
+            # get strategy profile
+            k = []
+            for j in range(len(indices[i])):
+                k.extend(strategy_sets[j][indices[i][j]])
+
+            # get payoffs
+            node = n0
+            index = -1
+            while node.payoffs == []:
+                for m in range(len(k)):
+                    if node.node_number in k[m]["num"]:
+                        if node.children[k[m]["index"]][0].payoffs != []:
+                            index = k[m]["index"]
+                            node_perm = ret_perms[r][node.node_number]
+                            for pn in range(len(node_perm)):
+                                if node_perm[pn][0] == index:
+                                    cnode_perm = node_perm[pn][1]
+                            node = node.children[k[m]["index"]][cnode_perm]
+                            break
+                        node = node.children[k[m]["index"]][0]
+                        break
+            
+            sub_arr[*indices[i]] = {
+                "strategy_profile": k,
+                "payoff": node.payoffs,
+                "payoff_node": node
+            }
+            
+        big_arr[r] = sub_arr
+
+    # convert ret_perms back to original form: remove the index tuple
+    for i in range(len(ret_perms)):
+        for k, v in ret_perms[i].items():
+            ret_perms[i][k] = [j[1] for j in v]
+
+    # ret_perms has all possible perms of pre terminal nodes
+    # while final_perms has all possible perms indexed by the root's direct children
+    # we need to return in the format of final_perms thus, converting ret_perms' format to final_perms'
+    unified_perms = []
+    for pm in range(len(ret_perms)):
+        d = {}
+        for i in range(len(n0.children)):
+            unified_child = []
+            node = n0.children[i][0]
+            
+            def find_nodes(node):
+                c = 0
+                for n in range(len(node.children)):
+                    if node.children[n][0].payoffs != []:
+                        unified_child.append(ret_perms[pm][node.node_number][c])
+                        c += 1
+                    find_nodes(node.children[n][0])
         
-        arr[*indices[i]] = {
-            "strategy_profile": k,
-            "payoff": node.payoffs,
-            "payoff_node": node
-        }
+            find_nodes(node)
 
-    return arr, nplayers, strategy_sets
+            d[node.node_number] = unified_child
+        unified_perms.append(d)
+            
+    ret_perms = unified_perms
+
+    # returns the final list of perms
+    true_perms = []
+    for i in range(len(ret_perms)):
+        ind = []
+        for k, v in ret_perms[i].items():
+            ind.append(final_perms[k].index(v))
+        true_perms.append(ind)
+
+    return big_arr, true_perms, nplayers, strategy_sets
 
 def nash_eq(n0):
 
     # when called from the spne function, it must also take into account multiple possible children
-    # hence, the perms are passed to the get_matrix function
-    ch = n0.children
-    maxp = [len(i)-1 for i in ch]
-    perms = all_perms(maxp)
+    # done in get_matrix
 
-    for p in range(len(perms)):
+    fin_matrix, perms, nplayers, strategy_sets = get_matrix(n0)
 
-        arr, nplayers, strategy_sets = get_matrix(n0, perms[p])
+    for p in range(len(fin_matrix)):
+
         best_responses = []
 
         for l in range(nplayers):
@@ -306,8 +430,9 @@ def nash_eq(n0):
 
                 max_payoff_arr = [{"payoff": [float("-inf") for _ in range(nplayers)]}]
 
-                for k in range(len(arr[*indices[j]])):
-                    sub_dict = arr[*indices[j]][k]
+                for k in range(len(fin_matrix[p][*indices[j]])):
+                    sub_dict = fin_matrix[p][*indices[j]][k]
+
                     if sub_dict["payoff"][l] > max_payoff_arr[0]["payoff"][l]:
                         max_payoff_arr = [sub_dict]
                     elif sub_dict["payoff"][l] == max_payoff_arr[0]["payoff"][l]:
@@ -322,7 +447,7 @@ def nash_eq(n0):
             if best_responses.count(best_responses[i]) >= nplayers and best_responses[i] not in final_responses:
                 final_responses.append(best_responses[i])
         
-        yield final_responses
+        yield perms[p], final_responses
 
 ################################# Main #################################
 
@@ -352,7 +477,7 @@ def main_spne(n0):
 
 def main_nash(n0):
     final_response = []
-    for i in nash_eq(n0):
+    for _, i in nash_eq(n0):
         final_response.extend(i)
     ret = {"payoffs": [], "profile": []}
     for i in range(len(final_response)):
