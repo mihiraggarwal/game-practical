@@ -111,7 +111,7 @@
 </script>
 
 <div class="main">
-    <button class="plus-btn" class:colour={initial || colour} class:imperfect={imperfect} id="plus-btn-node-{node_num}" on:click={btnClick} on:contextmenu={(event) => getImperfections(event)} >
+    <button class="plus-btn" class:colour={initial || colour} class:imperfect={imperfect} id="plus-btn-node-{node_num}" on:click={btnClick} on:contextmenu={(event) => getImperfections(event)} data-testid="plus-node-{node_num}">
         <i class="fa fa-plus plus {node_num}" id="plus-node-{node_num}"></i>
     </button>
 </div>
@@ -119,18 +119,18 @@
 <dialog class="dlg" id="dlg-{node_num}">
     <div class="dialog">
         <div class="top_btns">
-            <button class="optionBtn" class:selected={selected==0} on:click={moveBtn}>Move</button>
-            <button class="optionBtn" class:selected={selected==1} on:click={payoffBtn}>Payoff</button>
+            <button class="optionBtn" class:selected={selected==0} on:click={moveBtn} data-testid="move-{node_num}">Move</button>
+            <button class="optionBtn" class:selected={selected==1} on:click={payoffBtn} data-testid="payoff-{node_num}">Payoff</button>
         </div>
 
         <form class="player_num" id="player_num_{node_num}" on:submit={(event) => playerEnter(event)}>
-            <input type="number" name="player_num" class="player_input" id="player_input_{node_num}" placeholder="Player Number" required />
-            <button class="optionBtn">Enter</button>
+            <input type="number" name="player_num" class="player_input" id="player_input_{node_num}" placeholder="Player Number" required data-testid="playernum-{node_num}" />
+            <button class="optionBtn" data-testid="move_enter_{node_num}">Enter</button>
         </form>
 
         <form class="payoff" id="payoff_{node_num}" on:submit={(event) => payoffEnter(event)}>
-            <input type="text" name="payoff" class="payoff_input" id="payoff_input_{node_num}" placeholder="Payoff (example: 1,2)" required pattern="^\d+(,\d+)*\d?$" />
-            <button class="optionBtn" id="enterBtn">Enter</button>
+            <input type="text" name="payoff" class="payoff_input" id="payoff_input_{node_num}" placeholder="Payoff (example: 1,2)" required pattern="^\d+(,\d+)*\d?$" data-testid="payoffval-{node_num}" />
+            <button class="optionBtn" id="enterBtn" data-testid="payoff_enter_{node_num}">Enter</button>
         </form>
     </div>
 </dialog>

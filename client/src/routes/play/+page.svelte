@@ -132,15 +132,15 @@
             <button on:click={saveImperfections}>Add Imperfect Info Set</button>
         {/if}
         
-        {#if (payoffs)}
-            <div class="payoff">Payoff: ({payoffs[$profile_index]})</div>
-        {/if}
-
         <div class="index_container">
             {#each Array.from({ length: nSolns }) as _, i}
                 <button class="soln_index" class:selected={selected==i} on:click={() => select(i)}></button>
             {/each}
         </div>
+
+        {#if (payoffs)}
+            <div class="payoff">Payoff: ({payoffs[$profile_index]})</div>
+        {/if}
 
         <div class="buttons">
             <button on:click={() => solve("nash")} class:loading={loading_nash} class:selected={data_nash} disabled={loading_nash}>{loading_nash ? "Loading" : "Nash"}</button>

@@ -26,7 +26,7 @@
     }
 </script>
 
-<button type="button" class="action_btn" class:colour={initial || colour} on:click={add_action}>Add Action</button>
+<button type="button" class="action_btn" class:colour={initial || colour} on:click={add_action} data-testid="action-{node_num}">Add Action</button>
 
 <dialog class="action_modal" id="action_modal-{node_num}">
     <form class="modal_div" on:submit={(event) => {enter(event)}}>
@@ -35,15 +35,15 @@
             <div class="indi_action">
                 <div class="action_ntm">{i+1}.</div>
                 <!-- svelte-ignore a11y-autofocus -->
-                <input type="text" class="action_input {node_num}" required autofocus>
+                <input type="text" class="action_input {node_num}" data-testid="input-{node_num}-{i}" required autofocus>
             </div>
             {/each}
         </div>
         <div class="action_buttons">
-            <button type="button" class="plus_btn" on:click={add_row}>
+            <button type="button" class="plus_btn" on:click={add_row} data-testid="plus_btn_{node_num}">
                 <i class="fa fa-plus plus"></i>
             </button>
-            <button type="submit" class="enter_btn">Finish</button>
+            <button type="submit" class="enter_btn" data-testid="finish-{node_num}">Finish</button>
         </div>
     </form>
 </dialog>
