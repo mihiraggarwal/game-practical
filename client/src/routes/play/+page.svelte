@@ -91,6 +91,13 @@
                 if (type == "spne") { loading_spne = false; data_spne = true; data_nash = false }
                 else { loading_nash = false; data_nash = true; data_spne = false }
             })
+        }).catch(err => {
+            console.log(err)
+            error = true
+            error_msg = "Something went wrong"
+            loading_nash = false
+            loading_spne = false
+            return
         })
     }
 
