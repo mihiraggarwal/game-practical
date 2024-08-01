@@ -9,7 +9,7 @@
     <div class="options">
         <a href="/help"><img src={question} alt="question" class="question"></a>
         <a href="/play"><img src={play} alt="play" class="play"></a>
-        <a href="https://github.com/mihiraggarwal/game-practical" target="_blank"><img src={github} alt="github" class="github"></a>
+        <!-- <a href="https://github.com/mihiraggarwal/game-practical" target="_blank"><img src={github} alt="github" class="github"></a> -->
     </div>
 </div>
 
@@ -56,7 +56,7 @@
         margin-left: 0.5vw;
     }
 
-    .github {
+    /* .github {
         width: 3.2vw;
-    }
+    } */
 </style>
