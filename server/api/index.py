@@ -1,10 +1,24 @@
+import os
+import dotenv
 from flask import Flask, request
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from api.solver import main_spne, main_nash, Node
 
+dotenv.load_dotenv()
+
+CLIENT_URL = os.environ.get('CLIENT_URL')
+
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": [CLIENT_URL]}})
+
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["100 per day", "10 per hour"]
+)
 
 @app.route("/")
 def index():
