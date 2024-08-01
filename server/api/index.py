@@ -75,9 +75,12 @@ def validate_tree(node):
         return False
     
     for i in range(len(node["children"])):
-        for j in range(len(node["children"][i]["imperfect_to"])):
-            if [node["children"][i]["imperfect_to"][j]] not in node["children"]:
+        if len(node["children"][i]["imperfect_to"]) > 0:
+            if len(node["children"][i]["payoffs"]) > 0:
                 return False
+            for j in range(len(node["children"][i]["imperfect_to"])):
+                if node["children"][i]["imperfect_to"][j] not in [k["node_number"] for k in node["children"]]:
+                    return False
         if not validate_tree(node["children"][i]):
             return False
         
