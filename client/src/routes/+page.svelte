@@ -51,8 +51,8 @@
     .link {
         border: 3px solid #000;
         border-radius: 100%;
-        width: 5vw;
-        height: 5vw;
+        width: 5rem;
+        height: 5rem;
         padding: 0;
         background-color: #fff;
         display: flex;
@@ -61,7 +61,7 @@
     }
 
     img {
-        width: 2.6vw;
+        width: 2.6rem;
     }
 
     .play {

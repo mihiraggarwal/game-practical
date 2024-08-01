@@ -139,8 +139,9 @@
     .plus-btn {
         border: 5px solid #000;
         border-radius: 50%;
-        width: 3vw;
-        height: 3vw;
+        width: 3rem;
+        height: 3rem;
+        padding: 0.5rem;
         display: flex;
         justify-content: center;
         align-items: center;

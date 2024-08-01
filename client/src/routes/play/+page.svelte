@@ -209,7 +209,7 @@
         /* font-weight: bold; */
         border-radius: 7px;
         height: 100%;
-        padding: 0.5vw 1vw;
+        padding: 0.5rem 1rem;
         font-size: 1em;
     }
 
@@ -220,8 +220,8 @@
     .soln_index {
         border: 3px solid #000;
         border-radius: 100%;
-        width: 2vw;
-        height: 2vw;
+        width: 2rem;
+        height: 2rem;
         padding: 0;
     }
 

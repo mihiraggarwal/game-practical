@@ -55,7 +55,7 @@
         color: #000;
         border-radius: 5px;
         height: 100%;
-        width: 8vw;
+        width: 8rem;
         font-size: 1em;
     }
 
@@ -93,7 +93,7 @@
     .action_ntm {
         font-family: "Inter";
         font-size: 1em;
-        width: 2vw;
+        width: 2rem;
     }
 
     .indi_action {
