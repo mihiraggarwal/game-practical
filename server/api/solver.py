@@ -307,6 +307,9 @@ def get_matrix(n0):
     final_perms = {}
     for i in range(len(ch)):
         subnode = ch[i][0]
+        if subnode.payoffs != []:
+            final_perms[subnode.node_number] = [[]]
+            continue
         final_perms[subnode.node_number] = all_perms(find_total(subnode))
     
     for k, v in children_n_map.items():
@@ -358,7 +361,7 @@ def get_matrix(n0):
                         node = node.children[k[m]["index"]][0]
                         break
             
-            sub_arr[*indices[i]] = {
+            sub_arr[tuple(indices[i])] = {
                 "strategy_profile": k,
                 "payoff": node.payoffs,
                 "payoff_node": node
@@ -430,8 +433,8 @@ def nash_eq(n0):
 
                 max_payoff_arr = [{"payoff": [float("-inf") for _ in range(nplayers)]}]
 
-                for k in range(len(fin_matrix[p][*indices[j]])):
-                    sub_dict = fin_matrix[p][*indices[j]][k]
+                for k in range(len(fin_matrix[p][tuple(indices[j])])):
+                    sub_dict = fin_matrix[p][tuple(indices[j])][k]
 
                     if sub_dict["payoff"][l] > max_payoff_arr[0]["payoff"][l]:
                         max_payoff_arr = [sub_dict]
