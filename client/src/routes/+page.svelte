@@ -5,12 +5,18 @@
 </script>
 
 <div class="container">
-    <h1>game-practical</h1>
-    <div class="options">
-        <a href="/help"><img src={question} alt="question" class="question"></a>
-        <a href="/play"><img src={play} alt="play" class="play"></a>
-        <!-- <a href="https://github.com/mihiraggarwal/game-practical" target="_blank"><img src={github} alt="github" class="github"></a> -->
+    <div></div>
+    <div class="main">
+        <h1>game-practical</h1>
+        <div class="options">
+            <a class="link" href="/help"><img src={question} alt="question" class="question"></a>
+            <a class="link" href="/play"><img src={play} alt="play" class="play"></a>
+            <!-- <a href="https://github.com/mihiraggarwal/game-practical" target="_blank"><img src={github} alt="github" class="github"></a> -->
+        </div>
     </div>
+    <footer>
+        <p>Made with &lt;3 by <a href="https://github.com/mihiraggarwal" target="_blank">Mihir Aggarwal</a></p>
+    </footer>
 </div>
 
 <style>
@@ -19,7 +25,13 @@
         flex-direction: column;
         min-height: 100vh;
         box-sizing: border-box;
-        justify-content: center;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .main {
+        display: flex;
+        flex-direction: column;
         align-items: center;
         gap: 3vh;
     }
@@ -36,7 +48,7 @@
         gap: 2vw;
     }
 
-    a {
+    .link {
         border: 3px solid #000;
         border-radius: 100%;
         width: 5vw;
@@ -59,4 +71,11 @@
     /* .github {
         width: 3.2vw;
     } */
+
+    footer {
+		border-top: 1px solid #000;
+		text-align: center;
+		font-family: "airbnb-bold";
+        width: 100%;
+	}
 </style>

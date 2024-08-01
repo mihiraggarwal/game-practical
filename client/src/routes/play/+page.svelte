@@ -146,6 +146,10 @@
             <button on:click={() => solve("nash")} class:loading={loading_nash} class:selected={data_nash} disabled={loading_nash}>{loading_nash ? "Loading" : "Nash"}</button>
             <button on:click={() => solve("spne")} class:loading={loading_spne} class:selected={data_spne} disabled={loading_spne}>{loading_spne ? "Loading" : "SPNE"}</button>
         </div>
+
+        <footer>
+            <p>Made with &lt;3 by <a href="https://github.com/mihiraggarwal" target="_blank">Mihir Aggarwal</a></p>
+        </footer>
     </div>
 </div>
 
@@ -155,7 +159,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding: 5vh 5vw;
+        padding: 5vh 5vw 0 5vw;
         box-sizing: border-box;
         gap: 7.5vh;
     }
@@ -247,4 +251,11 @@
         display: flex;
         gap: 1vw;
     }
+
+    footer {
+		border-top: 1px solid #000;
+		text-align: center;
+		font-family: "airbnb-bold";
+        width: 100vw;
+	}
 </style>
