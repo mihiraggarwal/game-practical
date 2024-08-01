@@ -27,14 +27,30 @@ def index():
 @app.route("/spne", methods=["POST"])
 def spne():
     node = request.json
+    if not validate_tree(node):
+        return {"error": "Invalid tree"}
     node = convert_to_class(node)
-    return main_spne(node)
+
+    try:
+        n = main_spne(node)
+        return n
+    except Exception as e:
+        print(e)
+        return {"error": "Something went wrong"}
 
 @app.route("/nash", methods=["POST"])
 def nash():
     node = request.json
+    if not validate_tree(node):
+        return {"error": "Invalid tree"}
     node = convert_to_class(node)
-    return main_nash(node)
+
+    try:
+        n = main_nash(node)
+        return n
+    except Exception as e:
+        print(e)
+        return {"error": "Something went wrong"}
 
 def convert_to_class(node):
     n0 = Node(
@@ -49,3 +65,20 @@ def convert_to_class(node):
         n = convert_to_class(n0.children[i][0])
         n0.children[i][0] = n
     return n0
+
+def validate_tree(node):
+    if node["player"] < 0:
+        return False
+    if len(node["payoffs"]) == 0 and len(node["children"]) == 0:
+        return False
+    if len(node["children"]) != len(node["actions"]):
+        return False
+    
+    for i in range(len(node["children"])):
+        for j in range(len(node["children"][i]["imperfect_to"])):
+            if [node["children"][i]["imperfect_to"][j]] not in node["children"]:
+                return False
+        if not validate_tree(node["children"][i]):
+            return False
+        
+    return True

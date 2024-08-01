@@ -16,6 +16,9 @@
     let data_spne = false;
     let data_nash = false;
 
+    let error = false;
+    let error_msg = "";
+
     class Node {
         public node_number: number
         public player: number
@@ -69,6 +72,18 @@
             body: JSON.stringify(n)
         }).then(resp => {
             resp.json().then(data => {
+
+                if (data.error) {
+                    error = true
+                    error_msg = data.error
+                    loading_nash = false
+                    loading_spne = false
+                    return
+                }
+
+                error = false
+                error_msg = ""
+
                 payoffs = data.payoffs
                 profile.update(n => data.profile)
                 nSolns = data.profile.length
@@ -138,6 +153,9 @@
             {/each}
         </div>
 
+        {#if (error)}
+            <div class="payoff"><span>{error_msg}</span></div>
+        {/if}
         {#if (payoffs)}
             <div class="payoff">Payoff: ({payoffs[$profile_index]})</div>
         {/if}
@@ -174,6 +192,10 @@
     .payoff {
         font-family: "Inter";
         font-size: 1.5em;
+    }
+
+    span {
+        color: red;
     }
 
     .info_sets {
