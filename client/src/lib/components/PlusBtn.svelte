@@ -29,8 +29,15 @@
         }
     }
 
+    const onClick = (event: any) => {
+        if (event.target === dialog) {
+            dialog.close()
+        }
+    }
+
     const btnClick = () => {
         dialog = document.getElementById(`dlg-${node_num}`) as HTMLDialogElement;
+        dialog.addEventListener("click", onClick)
         dialog!.showModal()
     }
 
@@ -189,10 +196,11 @@
     dialog {
         border: 3px solid #000;
         border-radius: 5px;
-        padding: 3vh 2vw;
+        padding: 0;
     }
 
     .dialog {
+        padding: 3vh 2vw;
         display: flex;
         flex-direction: column;
         gap: 2vh;

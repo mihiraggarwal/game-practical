@@ -9,9 +9,17 @@
 
     let dialog: HTMLDialogElement;
     let action_counter: number = 0;
+
+    const onClick = (event: any) => {
+        if (event.target === dialog) {
+            dialog.close()
+        }
+    }
     
     const add_action = () => {
+        action_counter = 0;
         dialog = document.getElementById(`action_modal-${node_num}`) as HTMLDialogElement;
+        dialog.addEventListener("click", onClick)
         dialog.showModal();
     }
 
@@ -66,10 +74,11 @@
     dialog {
         border: 3px solid #000;
         border-radius: 5px;
-        padding: 3vh 2vw;
+        padding: 0;
     }
-
+    
     .modal_div {
+        padding: 3vh 2vw;
         display: flex;
         flex-direction: column;
         gap: 2vh;
