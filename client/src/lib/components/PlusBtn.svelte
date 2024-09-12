@@ -129,7 +129,7 @@
         </form>
 
         <form class="payoff" id="payoff_{node_num}" on:submit={(event) => payoffEnter(event)}>
-            <input type="text" name="payoff" class="payoff_input" id="payoff_input_{node_num}" placeholder="Payoff (example: 1,2)" required pattern="^\d+(,\d+)*\d?$" data-testid="payoffval-{node_num}" />
+            <input type="text" name="payoff" class="payoff_input" id="payoff_input_{node_num}" placeholder="Payoff (example: 1,2)" required pattern="^-?\d+(,-?\d+)*-?\d?$" data-testid="payoffval-{node_num}" />
             <button class="optionBtn" id="enterBtn" data-testid="payoff_enter_{node_num}">Enter</button>
         </form>
     </div>
