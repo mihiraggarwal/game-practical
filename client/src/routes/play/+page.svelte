@@ -49,6 +49,9 @@
 
     const solve = (type: string) => {
         let FETCH_URL: string;
+        selected = 0;
+        profile_index.update(n => 0)
+
         if (type == "spne") { loading_spne = true; FETCH_URL = `${PUBLIC_SERVER_URL}/spne` }
         else { loading_nash = true; FETCH_URL = `${PUBLIC_SERVER_URL}/nash` }
 
