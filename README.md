@@ -1,10 +1,10 @@
 # game-practical
 
-game-practical is an extensive form game tree solver. It can calculate the Pure Strategy Nash Equilibrium and Subgame Perfect Nash Equilibrium of any perfect and imperfect game tree which is discrete and finite.
+game-practical is an extensive form game tree solver. It can calculate the Pure Strategy Nash Equilibrium and Subgame Perfect Nash Equilibrium of any perfect and imperfect information game tree which is discrete and finite.
 
 Prisoner's dilemma - Nash equilibrium
 <p float="left">
-  <img src="static/imgs/image.png" width="45%" alt="Prisoner's dilemma" />
+  <img src="static/imgs/image.png" width="44.75%" alt="Prisoner's dilemma" />
   <img src="static/imgs/image-1.png" width="44.65%" alt="Prisoner's dilemma info set" /> 
 </p>
 
