@@ -11,7 +11,7 @@
         <div class="options">
             <a class="link" href="/help"><img src={question} alt="question" class="question"></a>
             <a class="link" href="/play"><img src={play} alt="play" class="play"></a>
-            <!-- <a href="https://github.com/mihiraggarwal/game-practical" target="_blank"><img src={github} alt="github" class="github"></a> -->
+            <a href="https://github.com/mihiraggarwal/game-practical" target="_blank" class="link"><img src={github} alt="github" class="github"></a>
         </div>
     </div>
     <footer>
@@ -68,9 +68,9 @@
         margin-left: 0.5vw;
     }
 
-    /* .github {
+    .github {
         width: 3.2vw;
-    } */
+    }
 
     footer {
 		border-top: 1px solid #000;
