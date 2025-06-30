@@ -50,7 +50,7 @@
     </div>
 
     <footer>
-        <p>Made with &lt;3 by <a href="https://github.com/mihiraggarwal" target="_blank">Mihir Aggarwal</a></p>
+        <p>Made with &lt;3 by <a href="https://mihiraggarwal.me" target="_blank">Mihir Aggarwal</a></p>
     </footer>
 </div>
 
